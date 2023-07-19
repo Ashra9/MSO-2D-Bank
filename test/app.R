@@ -110,7 +110,13 @@ dashboardUI <- function(id) {
                 ),
                 fluidRow(
                   box(
-                    title = "Hello, Shiny!",
+                    title = "Deposits and Withdrawals",
+                    width = 4,
+                    height = "100px",
+                    "Welcome to the dashboard!"
+                  ),
+                  box(
+                    title = "Loan Purchasing",
                     width = 4,
                     height = "100px",
                     "Welcome to the dashboard!"
@@ -122,13 +128,7 @@ dashboardUI <- function(id) {
                     "Welcome to the dashboard!"
                   ),
                   box(
-                    title = "Hello, Shiny!",
-                    width = 4,
-                    height = "100px",
-                    "Welcome to the dashboard!"
-                  ),
-                  box(
-                    title = "Hello, Shiny!",
+                    title = "State of each inventory",
                     width = 12,
                     height = "100px",
                     "Welcome to the dashboard!"
@@ -148,6 +148,13 @@ dashboardUI <- function(id) {
                     actionButton("loginButton", "Login")
                   )
                 )
+            ),
+            bs4TabItem(
+              tabName = "home",
+              tags$div(
+                class = "tab-content",  # Optional class for styling
+                tags$img(src = "image.png", width = "100%", height = "100%")
+              )
             )
             # Add your dashboard content here
           )
