@@ -26,7 +26,22 @@ getloanData <- function(){
   conn <- getAWSConnection()
   #password could contain an SQL insertion attack
   #Create a template for the query with placeholders for playername and password
-  query <- "SELECT loanID, LT.loanValue, durationToMaturity FROM loanInventory LI INNER JOIN loanTerms LT ON LT.loanType  = LI.loanType"
+  query <- "SELECT loanID, LI.loanType, LT.loanValue, durationToMaturity FROM loanInventory LI INNER JOIN loanTerms LT ON LT.loanType  = LI.loanType"
+  result <- dbGetQuery(conn,query)
+  
+  # return the dataframe
+  result
+}
+
+getcashInventory <- function(month){
+  
+  #open the connection
+  conn <- getAWSConnection()
+  #password could contain an SQL insertion attack
+  #Create a template for the query with placeholders for playername and password
+  querytemplate <- "SELECT * FROM cashInventory ci WHERE `month` = ?id1"
+  query <- sqlInterpolate(conn, querytemplate,id1=month)
+  print(query)
   result <- dbGetQuery(conn,query)
   
   # return the dataframe
@@ -56,6 +71,7 @@ updateCashInventory <- function(month, deposits, withdrawals, loanPayout, cashOn
 
 test <- function(){
   loan_df <- print(getloanData())
+  getcashInventory(3)
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)
 }
 

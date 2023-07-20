@@ -4,13 +4,13 @@ library(sqldf)
 
 withdrawalamount <- 1860 #for testing
 cashbalance <- 1400 #for testing
-loanData <- data.frame(loanID = c(1,2,3,4,5), loanValue = c(200, 300, 600, 300, 300), durationToMaturity = c(3,1,2,2,3)) #for testing
+loanData <- data.frame(loanID = c(1,2,3,4,5), loanType=c(1,2,3,2,2), loanValue = c(200, 300, 600, 300, 300), durationToMaturity = c(3,1,2,2,3)) #for testing
 loanData <- getloanData()
 
 #loanValue is how much the loan is initially worth
 #durationToMaturity is the no. of months the loan has left before it matures
 numberofeachtypeofloan <- c(2,1) #for testing
-eachtypeofloan <- c(300,200) #for testing
+eachtypeofloan <- c(2,1) #for testing
 
 #### Helper Function Section
 updateCashBalance <- function(cashbalance, newamt){
@@ -33,7 +33,7 @@ LiquidateLoans <- function(cashbalance, withdrawalamount, loanData, loansselecte
     num_rows_to_remove <- loansselected$no.of.each.type.of.loan[i]
     
     # Filter the rows in loanData with loanValue equal to loan_type
-    filtered_rows <- loanData[loanData$loanValue == loan_type, ]
+    filtered_rows <- loanData[loanData$loanType == loan_type, ]
     
     if (nrow(filtered_rows) >= num_rows_to_remove) {
       # Sort the filtered rows by durationToMaturity in descending order
@@ -50,11 +50,14 @@ LiquidateLoans <- function(cashbalance, withdrawalamount, loanData, loansselecte
       # Remove the top num_rows_to_remove rows from loanData
       loanData <- loanData[!(loanData$loanID %in% rows_to_remove$loanID), ]
     }
+    else{
+      stop(sprintf("You liquidated more loans of type %s then what you own",i))
+    }
   }
   
   # Update cash balance after liquidating loans and satisfying withdrawals
   cashbalance <- updateCashBalance(cashbalance, 0.7*removed_loans_value-withdrawalamount)
-  result_list <- list(resultloanData = loanData, resultcashbalance = cashbalance)
+  result_list <- list(resultloanData = loanData, resultcashbalance = cashbalance, removed_loans_value = removed_loans_value)
   return(result_list)
 }
 
@@ -62,21 +65,26 @@ LiquidateLoans <- function(cashbalance, withdrawalamount, loanData, loansselecte
 #the following will be in the server function after some observe event of a customer withdrawing:
 if(withdrawalamount <= cashbalance){
   cashbalance <- updateCashBalance(cashbalance, -1*withdrawalamount)
+  print("No liquidation needed")
 }else{
   # showModal(...) #notification to force player to liquidate loans
   if(0.7*sum(loanData$loanValue)+cashbalance < withdrawalamount){
+    stop("Game has ended due to inability to meet withdrawal demand")
     # showModal(...) #notification to tell player the game has ended
   }else{
     # showModal(...) #window with drop-down selections on loans for players to select from to liquidate
     loansselected <- SelectLoans(numberofeachtypeofloan,eachtypeofloan) #need to change the arguments; now assuming both are vectors of numbers
     print('loans selected:')
-    print(loansselected)
+    #print(loansselected)
     #TO-DO: need to find a way to retrieve the type of loan and the number of each type of loan
     #from player's selection in drop-down lists on the loans picked
-    if(0.7*numberofeachtypeofloan%*%eachtypeofloan+cashbalance < withdrawalamount){
+    result_list <- LiquidateLoans(cashbalance, withdrawalamount, loanData, loansselected)
+    #print(0.7*result_list$removed_loans_value)
+    if(0.7*result_list$removed_loans_value+cashbalance < withdrawalamount){
+      #print(0.7*numberofeachtypeofloan%*%eachtypeofloan+cashbalance)
+      stop("Did not meet withdrawal demand, liquidate more loans")
       # showModal(...) #window to show the loans selected are not enough to cover the withdrawal
     } else {
-      result_list <- LiquidateLoans(cashbalance, withdrawalamount, loanData, loansselected)
       print(result_list) #for debugging
       loanData <- result_list$resultloanData
       cashbalance <- result_list$resultcashbalance
@@ -86,3 +94,13 @@ if(withdrawalamount <= cashbalance){
 
 updateCashInventory(month=3, deposits=3000, withdrawals=withdrawalamount, loanPayout=0,cashOnHand=cashbalance)      
 # need to update loan inventory too
+
+test{
+  # test liquidate loans
+  loanData <- data.frame(loanID = c(1,2,3,4,5), loanType=c(1,2,3,2,2), loanValue = c(200, 300, 600, 300, 300), durationToMaturity = c(3,1,2,2,3)) #for testing
+  numberofeachtypeofloan <- c(2,1) #for testing
+  eachtypeofloan <- c(2,1) #for testing
+  loansselected <- SelectLoans(numberofeachtypeofloan,eachtypeofloan)
+  LiquidateLoans(cashbalance=1400, withdrawalamount=1860, loanData, loansselected)
+}
+
