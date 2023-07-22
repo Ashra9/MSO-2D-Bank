@@ -1,5 +1,4 @@
 # import database data
-library(sqldf)
 library(shiny)
 library(shinyalert)
 
@@ -100,11 +99,14 @@ if(withdrawalamount <= cashbalance){
   }
 }
 
-sql_in_query <- "("
-for (id in result_list$resultloanData["loanID"]){
-  sql_in_query = paste(sql_in_query, print(id), ",",sep="")
+# portion of query to update loanInventory
+sql_in_query <- ""
+for (id in loanData["loanID"]){
+  print((id))
+  sql_in_query <- paste(sql_in_query, id, collapse=",")
+  print(sql_in_query)
 }
-sql_in_query
+sql_in_query <- paste("(", sql_in_query, ")")
 
 updateCashInventory(month=3, deposits=3000, withdrawals=withdrawalamount, loanPayout=0,cashOnHand=cashbalance)      
 # need to update loan inventory too
