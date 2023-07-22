@@ -1,0 +1,54 @@
+This is the randomiser function to generate monthly deposit and monthly withdrawal of the bank
+
+```{r}
+# Given mean and standard deviation of bank deposit
+randomiser <- function(mean_val,std_dev){
+  
+  # Convert to shape and scale parameters
+  shape_param <- (mean_val / std_dev)^2
+  scale_param <- (std_dev^2) / mean_val
+
+  # Generate a random variable with the gamma distribution
+  randomiser_output <- rgamma(n = 1, shape = shape_param, scale = scale_param)
+}
+
+```
+
+
+Monthly deposit and withdrawal call
+```{r}
+# Monthly deposit with year end bonus scenario
+month <- 12
+monthly_deposit <- randomiser(10000,1000)
+monthly_deposit_update <- function(month){
+  
+  if(month == 12){
+  
+  monthly_deposit <- randomiser(20000,2000)
+  return(monthly_deposit)
+  } else {
+    return(monthly_deposit)
+  } 
+}
+monthly_deposit_update(month)
+```
+
+Monthly_withdrawal_update
+```{r}
+# Monthly deposit with Chinese new year large withdrawl and Christmas holiday spending scenario
+month <- 12
+monthly_withdrawal <- randomiser(5000,1000)
+monthly_withdrawal_update <- function(month){
+  if(month == 2){
+    monthly_withdrawal <- randomiser(10000,2000)
+    return(monthly_withdrawal)
+  } else if(month == 12){
+      monthly_withdrawal <- randomiser(10000,2000)
+      return(monthly_withdrawal)
+  } else{
+    return(monthly_withdrawal)
+    }
+}
+monthly_withdrawal_update(month)
+```
+
