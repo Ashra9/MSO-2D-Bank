@@ -90,7 +90,13 @@ if(withdrawalamount <= cashbalance){
       cashbalance <- result_list$resultcashbalance
     }
   }
-}      
+}
+
+sql_in_query <- "("
+for (id in result_list$resultloanData["loanID"]){
+  sql_in_query = paste(sql_in_query, print(id), ",",sep="")
+}
+sql_in_query
 
 updateCashInventory(month=3, deposits=3000, withdrawals=withdrawalamount, loanPayout=0,cashOnHand=cashbalance)      
 # need to update loan inventory too

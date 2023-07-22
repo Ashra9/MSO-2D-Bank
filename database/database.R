@@ -54,18 +54,49 @@ updateCashInventory <- function(month, deposits, withdrawals, loanPayout, cashOn
   query <- sqlInterpolate(conn, querytemplate,id1=month,id2=deposits,id3=withdrawals, id4=loanPayout, id5=cashOnHand)
   print(query) #for debug
   success <- FALSE
-  tryCatch(
-    {  # This is not a SELECT query so we use dbExecute
-      result <- dbExecute(conn,query)
-      print("Score published")
-      success <- TRUE
-    }, error=function(cond){print("publishScore: ERROR")
-      print(cond)
-    }, 
-    warning=function(cond){print("publishScore: WARNING")
-      print(cond)},
-    finally = {}
-  )
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+}
+
+updateLoanInventory <- function(){
+  conn <- getAWSConnection()
+  querytemplate <- "INSERT INTO cashInventory (month, deposits, withdrawals,loanPayout, cashOnHand) VALUES (?id1,?id2,?id3,?id4,?id5)"
+  query <- sqlInterpolate(conn, querytemplate,id1=month,id2=deposits,id3=withdrawals, id4=loanPayout, id5=cashOnHand)
+  print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
   dbDisconnect(conn)
 }
 
