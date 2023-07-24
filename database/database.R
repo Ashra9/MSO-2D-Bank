@@ -26,10 +26,11 @@ getloanData <- function(current_month){
   conn <- getAWSConnection()
   #password could contain an SQL insertion attack
   #Create a template for the query with placeholders for playername and password
-  query <- "SELECT LI.loanID, LT.loanValue, l.loanType, LT.loanDuration, l.monthPurchased FROM loanInventory LI INNER JOIN loan l ON l.loanID = LI.loanID INNER JOIN loanTerms LT ON LT.loanType  = l.loanType"
+  query <- "SELECT l.loanID, lt.loanValue, l.loanType, lt.loanDuration, l.month FROM loan l INNER JOIN loanInventory li ON l.loanID = li.loanID INNER JOIN loanTerms lt ON lt.loanType  = l.loanType 
+"
   result <- dbGetQuery(conn,query)
   
-  result$durationToMaturity <- result$loanDuration - (current_month-result$monthPurchased)
+  result$durationToMaturity <- result$loanDuration - (current_month-result$month)
   
   # return the dataframe
   result
@@ -144,6 +145,16 @@ updateLoansPurchased <- function(purchase_list, current_month){
   dbDisconnect(conn)
 }
 
+# Helper fucntion for updateLoansRemoved to generate loanID_left_in_query
+generate_loanID_left_in_query <- function(loanData) {
+  loanID_left_in_query <- ""
+  for (id in loanData["loanID"]){
+    loanID_left_in_query <- paste(loanID_left_in_query, id, collapse=",")
+  }
+  loanID_left_in_query <- paste("(", loanID_left_in_query, ")")
+  loanID_left_in_query
+}
+
 # Delete loans from loanInventory that matured, liquidated due to inability to meet withdrawal demand, or defaulted on.
 updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, current_month){
   # Query loans to remove
@@ -210,7 +221,8 @@ test <- function(){
   # after next button is clicked, purchase loans and add to database
   purchase_list = list(type=c(1,2,3), num=c(1,2,1))
   updateLoansPurchased(purchase_list, current_month=3)
-  updateLoansRemoved("(1, 2, 3)", defaulted=0, liquidated=0, current_month=3)
+  generate_loanID_left_in_query(loanData)
+  updateLoansRemoved(loanID_left_in_query="(1, 2, 3)", defaulted=0, liquidated=0, current_month=3)
   
   getcashInventory(3)
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)
