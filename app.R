@@ -1,5 +1,5 @@
 source("usePackages.R")
-#source("database/database.R")
+source("database/database.R")
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
 loadPkgs(pkgnames)
 #Define your custom theme
@@ -192,9 +192,6 @@ dashboardServer <- function(id) {
         loanData <- getloanData(vals$current_month)
         print(loanData)
         
-        # Enact withdrawals and ensure demand is met
-        # ......
-        
         # Update loans purchased
         # Check cash balance first.......
         purchase_list = list(type=c(1,2,3), num=c(input$loan1,input$loan2,input$loan3))
@@ -202,8 +199,11 @@ dashboardServer <- function(id) {
         print(purchase_list)
         #updateLoansPurchased(purchase_list, current_month=vals$current_month)
         
+        # Enact withdrawals and ensure demand is met
+        # ......
+        
         # Update loans that reached maturity
-        loanData <- subset(loanData, loanData$durationToMaturity!=0)
+        loanData <- subset(loanData, loanData$durationToMaturity>0)
         print("Loan Maturity")
         print(loanData)
         #loanID_left_in_query <- generate_loanID_left_in_query(loanData)
