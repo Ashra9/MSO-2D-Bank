@@ -1,4 +1,8 @@
+#This code assumes the total loan duration for each loan is 5months, 
+#but ideally it should pull this data from corresponding loan type
+
 library(shiny)
+library(shinyWidgets)
 
 loanData <- data.frame(
   loanID = c(1, 2),
@@ -13,26 +17,25 @@ ui <- fluidPage(
     title = "State of each inventory",
     width = 12,
     height = "100px",
-    fluidRow(
-      column(6, tableOutput("loanTable")),  # Display the table in a column of width 6
-      column(6, uiOutput("loanProgressBars"))  # Display the progress bars in a column of width 6
-    )
+    uiOutput("loanProgressBars")  # Display the progress bars
   )
 )
 
 server <- function(input, output) {
-  output$loanTable <- renderTable({
-    loan_table <- data.frame("Loan Value" = loanData$loanValue, "Months to maturity" = loanData$loanmaturity)
-    colnames(loan_table) <- c("Loan Value", "Months to maturity")
-    return(loan_table)
-  })
-  
   output$loanProgressBars <- renderUI({
     progress_bars <- list()
     for (i in 1:nrow(loanData)) {
-      loan_duration <- loanData$loanmaturity[i]
+      loan_value <- loanData$loanValue[i]
+      loan_title <- paste("Loan", loanData$loanID[i])
+      loan_duration <- 5 - loanData$loanmaturity[i]
       progress <- 100 * (loan_duration / 5)  # Calculate the progress percentage
-      pb <- progressBar(id = paste0("progress", i), value = progress, status = "primary")
+      pb <- progressBar(
+        id = paste0("progress", i),
+        value = progress,
+        display_pct = TRUE,
+        status = "primary",
+        title = paste(loan_title, "- $", loan_value)
+      )
       progress_bars[[i]] <- div(pb, style = "margin-bottom: 10px;")
     }
     return(progress_bars)
