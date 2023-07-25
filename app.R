@@ -233,9 +233,14 @@ dashboardServer <- function(id) {
       # Add any server logic here
       ns <- session$ns
       
-      # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=0)
+      # Initialise cash on hand with deposits
+      gamestate <- getGameState(1)
+      deposits <- randomiser(gamestate$depositsMean, gamestate$depositsSTD)
+      print(paste("Deposits amount:", deposits))
       
+      # reactiveValues object for storing items like the user password
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=NULL, loanPayout=NULL)
+
       # when registering
       observeEvent(input$registerButton,{
         showModal(passwordModal())

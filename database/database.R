@@ -33,6 +33,19 @@ getGameState <- function(current_month){
   result
 }
 
+getloanTerms <- function() {
+  #open the connection
+  conn <- getAWSConnection()
+  #Create a template for the query with placeholders for playername and password
+  query <- "SELECT * FROM loanTerms"
+  result <- dbGetQuery(conn,query)
+  
+  dbDisconnect(conn)
+  
+  # return the dataframe
+  result
+}
+
 getloanData <- function(current_month){
   
   #open the connection
@@ -173,14 +186,31 @@ generate_loanID_left_in_query <- function(loanData) {
 
 # Delete loans from loanInventory that matured, liquidated due to inability to meet withdrawal demand, or defaulted on.
 updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, current_month){
+  
+  #open the connection
+  conn <- getAWSConnection()
+  
   # Query loans to remove
-  query <- "SELECT loanID FROM loanInventory WHERE loanID NOT IN"
+  query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
   query <- paste(query, loanID_left_in_query)
   print(query) #for debug
   result <- dbGetQuery(conn,query)
   
+  dbDisconnect(conn)
+  
+  # Give value to loanPayout if loan has reached maturity
+  loanPayout <- 0
+  if (defaulted==0 & liquidated==0) {
+    print("There are loans that reached maturity")
+    result$payout <- result$loanValue*(1 + result$interest)^(result$loanDuration/12)
+    loanPayout <- sum(result$payout)
+  }
+  
   # Add removed loans to loans completed
   for (loanID in result$loanID) {
+    #open the connection
+    conn <- getAWSConnection()
+    
     query <- sprintf("INSERT INTO loanCompleted (loanID, defaulted, liquidated, month) VALUES (%s, %s, %s, %s)", loanID, defaulted, liquidated, current_month)
     print(query) #for debug
     success <- FALSE
@@ -228,7 +258,10 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
     )
   } # end while loop
   dbDisconnect(conn)
-  }
+  
+  # return loan payout
+  loanPayout
+}
 
 ##### #####
 
@@ -242,10 +275,11 @@ test <- function(){
   purchase_list = list(type=c(1,2,3), num=c(1,2,1))
   updateLoansPurchased(purchase_list, current_month=3)
   generate_loanID_left_in_query(loanData)
-  updateLoansRemoved(loanID_left_in_query="(1, 2, 3)", defaulted=0, liquidated=0, current_month=3)
+  loanPayout <- updateLoansRemoved(loanID_left_in_query="(1, 2, 3)", defaulted=0, liquidated=0, current_month=3)
+  loanPayout
   
   getcashInventory(3)
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)
-  
+  getloanTerms()
 }
 
