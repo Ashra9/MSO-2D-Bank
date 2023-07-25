@@ -78,21 +78,34 @@ print(loanData)
 
 loan_default_update
 ```{r}
-loanData <- data.frame(loanID = c(1,2), loanType = c(1,2), loanValue = c(1000,2000), durationToMaturity = c(2,3), loan_risk = c(0.03,0.05))
-
+loanData <- data.frame(
+  loanID = c(1, 2),
+  loanType = c(1, 2),
+  loanValue = c(1000, 2000),
+  durationToMaturity = c(2, 3),
+  loan_risk = c(0.03, 0.05)
+)
 
 loan_default_update <- function() {
+  rows_to_remove <- c()
   for (i in 1:nrow(loanData)) {
-    risk <- loanData$loan_risk[i]/12
+    risk <- loanData$loan_risk[i]
     if (runif(1) < risk) {
-      loanData$loanValue[i] <- 0
+      rows_to_remove <- c(rows_to_remove, i)
     }
   }
-  return(loanData)
+  if (length(rows_to_remove) > 0) {
+    updatedLoanData <- loanData[-rows_to_remove, ]
+  } else {
+    updatedLoanData <- loanData
+  }
+  return(updatedLoanData)
 }
 
-loan_default_update()
-loanData
+# Call the function to update the loan values with their respective risk of default
+updatedLoanData <- loan_default_update()
+print(updatedLoanData)
+
 ```
 
 
