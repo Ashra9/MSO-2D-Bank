@@ -181,12 +181,7 @@ dashboardServer <- function(id) {
       ns <- session$ns
       
       # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=2)
-      
-      output$nextButton <- renderUI({
-        req(input$sidebar == "game")
-        tags$li(class = "dropdown", actionButton("nextmonth", "Next Month"))
-      })
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=0)
       
       # Check observation of next month
       loan_select(input,output,session, vals)

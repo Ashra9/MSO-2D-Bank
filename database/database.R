@@ -19,6 +19,19 @@ getAWSConnection <- function(){
   conn
 }
 
+getGameState <- function(current_month){
+  
+  #open the connection
+  conn <- getAWSConnection()
+  query <- "SELECT * FROM gameState gs WHERE gs.month ="
+  query <- paste(query, current_month)
+  result <- dbGetQuery(conn,query)
+  
+  dbDisconnect(conn)
+  
+  # return the dataframe
+  result
+}
 
 getloanData <- function(current_month){
   
@@ -26,11 +39,12 @@ getloanData <- function(current_month){
   conn <- getAWSConnection()
   #password could contain an SQL insertion attack
   #Create a template for the query with placeholders for playername and password
-  query <- "SELECT l.loanID, lt.loanValue, l.loanType, lt.loanDuration, l.month FROM loan l INNER JOIN loanInventory li ON l.loanID = li.loanID INNER JOIN loanTerms lt ON lt.loanType  = l.loanType 
-"
+  query <- "SELECT l.loanID, lt.loanValue, l.loanType, lt.loanDuration, lt.risk, l.month FROM loan l INNER JOIN loanInventory li ON l.loanID = li.loanID INNER JOIN loanTerms lt ON lt.loanType  = l.loanType"
   result <- dbGetQuery(conn,query)
   
   result$durationToMaturity <- result$loanDuration - (current_month-result$month)
+  
+  dbDisconnect(conn)
   
   # return the dataframe
   result
@@ -46,6 +60,8 @@ getcashInventory <- function(month){
   query <- sqlInterpolate(conn, querytemplate,id1=month)
   print(query)
   result <- dbGetQuery(conn,query)
+  
+  dbDisconnect(conn)
   
   # return the dataframe
   result
@@ -216,6 +232,9 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
 ##### #####
 
 test <- function(){
+  # get game state for deposits and withdrawal
+  getGameState(1)
+  
   # start of the month data, prepare duration to maturity for calculations as well
   loanData <- getloanData(current_month=3)
   # after next button is clicked, purchase loans and add to database
