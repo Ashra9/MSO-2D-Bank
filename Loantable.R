@@ -1,4 +1,4 @@
-#This code assumes the total loan duration for each loan is 5months, 
+#This code assumes the total loan duration for each loan is 5 months, 
 #but ideally it should pull this data from corresponding loan type
 
 library(shiny)
@@ -21,7 +21,7 @@ ui <- fluidPage(
   )
 )
 
-server <- function(input, output) {
+nicebar <- function(input, output) {
   output$loanProgressBars <- renderUI({
     progress_bars <- list()
     for (i in 1:nrow(loanData)) {
@@ -42,4 +42,4 @@ server <- function(input, output) {
   })
 }
 
-shinyApp(ui, server)
+shinyApp(ui, nicebar)
