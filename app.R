@@ -1,5 +1,6 @@
 source("usePackages.R")
 source("database/database.R")
+source("routes/HelperServerFunctions.R")
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
 loadPkgs(pkgnames)
 #Define your custom theme
@@ -35,6 +36,8 @@ my_theme <- create_theme(
     weight_bold = 900
   )
 )
+
+
 # Define UI function for the module
 dashboardUI <- function(id) {
   ns <- NS(id)
@@ -186,47 +189,7 @@ dashboardServer <- function(id) {
       })
       
       # Check observation of next month
-      observeEvent(input$nextmonth,{
-        print("Current month:")
-        print(vals$current_month)
-        loanData <- getloanData(vals$current_month)
-        print(loanData)
-        
-        # Update loans purchased
-        # Check cash balance first.......
-        purchase_list = list(type=c(1,2,3), num=c(input$loan1,input$loan2,input$loan3))
-        print("Purchase List")
-        print(purchase_list)
-        #updateLoansPurchased(purchase_list, current_month=vals$current_month)
-        
-        # Enact withdrawals and ensure demand is met
-        # ......
-        
-        # Update loans that reached maturity
-        loanData <- subset(loanData, loanData$durationToMaturity>0)
-        print("Loan Maturity")
-        print(loanData)
-        #loanID_left_in_query <- generate_loanID_left_in_query(loanData)
-        #updateLoansRemoved(loanID_left_in_query, defaulted=0, liquidated=0, current_month=3)
-        
-        # Update loans defaulted on
-        # ......
-        
-        # Update new month
-        vals$current_month <- vals$current_month + 1
-      })
-      # output$sidebarmenu <- renderUI({
-      #   sidebarMenuItems <- list()
-      #   observeEvent(input$nextmonth, {
-      #     sidebarMenuItems[[1]] <- menuItem("User Info", tabName = "userInfoTab", icon=icon("user"))
-      #     sidebarMenuItems[[2]] <- menuItem("Main Page", tabName = "game", icon = icon("gamepad"))
-      #     sidebarMenuItems[[3]] <- menuItem("Analysis Page", tabName = "analysisTab", icon = icon("dashboard"))
-      #     sidebarMenuItems[[4]] <- menuItem("Leaderboard", tabName = "leaderTab", icon = icon("star"))
-      #     sidebarMenuItems[[5]] <- menuItem("Tutorial", tabName = "tutorialTab", icon = icon("person-chalkboard"))
-      #   })
-      #   return(sidebarMenu(id=ns("tabs"), .list=sidebarMenuItems))
-      #   
-      # })
+      loan_select(input,output,session, vals)
     }
   )
 }
