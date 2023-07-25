@@ -1,4 +1,6 @@
 source("usePackages.R")
+source("database/database.R")
+source("routes/HelperServerFunctions.R")
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
 loadPkgs(pkgnames)
 #Define your custom theme
@@ -34,6 +36,8 @@ my_theme <- create_theme(
     weight_bold = 900
   )
 )
+
+
 # Define UI function for the module
 dashboardUI <- function(id) {
   ns <- NS(id)
@@ -53,17 +57,17 @@ dashboardUI <- function(id) {
               image = "Team logo.png"
             ),
             sidebarIcon = shiny::icon("bars"),
-            controlbarIcon = shiny::icon("table-cells"),
-            rightUi = uiOutput(ns("nextButton"))
+            controlbarIcon = shiny::icon("table-cells")
+            #rightUi = uiOutput(ns("nextButton"))
           ),
           sidebar = bs4DashSidebar(
             collapsed = TRUE,
             sidebarUserPanel(
               name = "No Bank Runs!"
             ),
-            uiOutput(ns("sidebarmenu")),
+            uiOutput("sidebarmenu"),
             bs4SidebarMenu(
-              id="sidebar",
+              id=ns("sidebar"),
               bs4SidebarMenuItem("Home", tabName = "home", icon = icon("home")),
               bs4SidebarMenuItem("Tutorial", tabName = "tutorial", icon = icon("dashboard")),
               bs4SidebarMenuItem("Game", tabName = "game", icon = icon("gamepad")),
@@ -98,7 +102,7 @@ dashboardUI <- function(id) {
                     )
                   ),
                   actionButton(
-                    "nextmonth", 
+                    ns("nextmonth"), 
                     "Next Month",
                     status = "primary", 
                     outline = TRUE,
@@ -118,8 +122,11 @@ dashboardUI <- function(id) {
                   box(
                     title = "Loan Purchasing",
                     width = 4,
-                    height = "100px",
-                    "Welcome to the dashboard!"
+                    #height = "100px",
+                    "Welcome to the dashboard!",
+                    numericInput(ns("loan1"), label = "Loan 1", value = 0, min=0),
+                    numericInput(ns("loan2"), label = "Loan 2", value = 0, min=0),
+                    numericInput(ns("loan3"), label = "Loan 3", value = 0, min=0)
                   ),
                   box(
                     title = "Hello, Shiny!",
@@ -173,26 +180,16 @@ dashboardServer <- function(id) {
       # Add any server logic here
       ns <- session$ns
       
+      # reactiveValues object for storing items like the user password
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=2)
+      
       output$nextButton <- renderUI({
         req(input$sidebar == "game")
         tags$li(class = "dropdown", actionButton("nextmonth", "Next Month"))
       })
       
-      observeEvent(input$nextmonth,{
-        
-      })
-      # output$sidebarmenu <- renderUI({
-      #   sidebarMenuItems <- list()
-      #   observeEvent(input$nextmonth, {
-      #     sidebarMenuItems[[1]] <- menuItem("User Info", tabName = "userInfoTab", icon=icon("user"))
-      #     sidebarMenuItems[[2]] <- menuItem("Main Page", tabName = "game", icon = icon("gamepad"))
-      #     sidebarMenuItems[[3]] <- menuItem("Analysis Page", tabName = "analysisTab", icon = icon("dashboard"))
-      #     sidebarMenuItems[[4]] <- menuItem("Leaderboard", tabName = "leaderTab", icon = icon("star"))
-      #     sidebarMenuItems[[5]] <- menuItem("Tutorial", tabName = "tutorialTab", icon = icon("person-chalkboard"))
-      #   })
-      #   return(sidebarMenu(id=ns("tabs"), .list=sidebarMenuItems))
-      #   
-      # })
+      # Check observation of next month
+      loan_select(input,output,session, vals)
     }
   )
 }
