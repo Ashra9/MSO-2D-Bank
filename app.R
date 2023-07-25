@@ -189,9 +189,9 @@ dashboardUI <- function(id) {
                   box(
                     title = "State of each inventory",
                     width = 12,
-                    height = "100px",
-                    "Welcome to the dashboard!"
-                  )
+                    
+                    uiOutput(ns("progressTrackers"))
+                    )
                 )
               ),
               bs4TabItem(
@@ -262,6 +262,20 @@ dashboardServer <- function(id) {
                                          loanValue = c(200, 300, 600, 300, 300), 
                                          durationToMaturity = c(3,1,2,2,3)), 
                      loansselected=SelectLoans(c(2,1),c(2,1)), percentage=0.7)
+      #for the progress trackers
+      loanData <- data.frame(
+        loanID = c(1, 2),
+        loanType = c(1, 2),
+        loanValue = c(1000, 2000),
+        loanmaturity = c(2, 3),
+        loan_risk = c(0.03, 0.05)
+      )
+      #rendering the UI for progress tracker
+      output$progressTrackers <- renderUI({
+        stateofProgressUI(session)
+      })
+      #render the progress tracker logic
+      serverProgressTracker(input,output,loanData)
     }
   )
 }
