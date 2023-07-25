@@ -42,10 +42,7 @@ my_theme <- create_theme(
 dashboardUI <- function(id) {
   ns <- NS(id)
   useShinyjs()
-  fluidPage(
-    fluidPage(
-      ),
-      tagList(
+    tagList(
         dashboardPage(
           # freshTheme = my_theme,
           header = dashboardHeader(
@@ -150,9 +147,10 @@ dashboardUI <- function(id) {
                   div(
                     class = "form",
                     h2("Login"),
-                    textInput("usernameInput", "Username"),
-                    passwordInput("passwordInput", "Password"),
-                    actionButton("loginButton", "Login")
+                    textInput(ns("usernameInput"), "Username"),
+                    passwordInput(ns("passwordInput"), "Password"),
+                    actionButton(ns("loginButton"), "Login"),
+                    actionButton(ns("registerButton"), "Register")
                   )
                 )
             ),
@@ -168,7 +166,6 @@ dashboardUI <- function(id) {
         )
       )
     )
-  )
   
 }
 
@@ -187,8 +184,13 @@ dashboardServer <- function(id) {
         req(input$sidebar == "game")
         tags$li(class = "dropdown", actionButton("nextmonth", "Next Month"))
       })
-      
-      # Check observation of next month
+      # when registering
+      observeEvent(input$registerButton,{
+        showModal(passwordModal())
+      })
+      #check if the login is successfull, then go to tutorial for instructions
+      login_checker(input,output, session)
+      # Check observation of next month's loans selected 
       loan_select(input,output,session, vals)
     }
   )
