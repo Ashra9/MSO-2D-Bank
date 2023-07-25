@@ -201,6 +201,7 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
         finally = {}
       )
     } # end while loop
+    dbDisconnect(conn)
   }
   
   # Delete loans from loanInventory

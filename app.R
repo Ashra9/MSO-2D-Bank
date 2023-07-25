@@ -202,9 +202,9 @@ dashboardUI <- function(id) {
                   div(
                     class = "form",
                     h2("Login"),
-                    textInput("usernameInput", "Username"),
-                    passwordInput("passwordInput", "Password"),
-                    actionButton("loginButton", "Login"),
+                    textInput(ns("usernameInput"), "Username"),
+                    passwordInput(ns("passwordInput"), "Password"),
+                    actionButton(ns("loginButton"), "Login"),
                     actionButton(ns("registerButton"), "Register")
                   )
                 )
