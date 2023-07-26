@@ -268,6 +268,10 @@ dashboardServer <- function(id) {
                                                loanValue = c(200, 300, 600, 300, 300), 
                                                durationToMaturity = c(3,1,2,2,3)), 
                            loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7)
+
+      #to fit the loans into a dataframe correctly -- needed for liquidate loans 
+      getMaxLoan()
+      
       #for the progress trackers
       loanData <- data.frame(
         loanID = c(1, 2),
