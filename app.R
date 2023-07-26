@@ -239,7 +239,13 @@ dashboardServer <- function(id) {
       print(paste("Deposits amount:", deposits))
       
       # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=NULL, loanPayout=NULL)
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=NULL, loanPayout=NULL,
+                            loanData = data.frame(loanID = c(1,2,3,4,5), 
+                                               loanType=c(1,2,3,2,2), 
+                                               loanValue = c(200, 300, 600, 300, 300), 
+                                               durationToMaturity = c(3,1,2,2,3)),
+                            numberofeachtypeofloan=NULL,
+                            percentage=0.7)
 
       # when registering
       observeEvent(input$registerButton,{
