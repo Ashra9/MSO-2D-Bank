@@ -263,11 +263,11 @@ dashboardServer <- function(id) {
       
       #liquidate loans event
       LiquidateLoans(cashbalance=1400, withdrawalamount=1860, 
-                     loanData=data.frame(loanID = c(1,2,3,4,5), 
-                                         loanType=c(1,2,3,2,2), 
-                                         loanValue = c(200, 300, 600, 300, 300), 
-                                         durationToMaturity = c(3,1,2,2,3)), 
-                     loansselected=SelectLoans(c(2,1),c(2,1)), percentage=0.7)
+                           loanData=data.frame(loanID = c(1,2,3,4,5), 
+                                               loanType=c(1,2,3,2,2), 
+                                               loanValue = c(200, 300, 600, 300, 300), 
+                                               durationToMaturity = c(3,1,2,2,3)), 
+                           loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7)
       #for the progress trackers
       loanData <- data.frame(
         loanID = c(1, 2),
