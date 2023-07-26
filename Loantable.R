@@ -26,14 +26,18 @@ server <- function(input, output) {
       loan_title <- paste("Loan", loanData$loanID[i])
       loan_duration <- loanData$loanmaturity[i]
       progress <- 100 * (loan_duration / 5)  # Calculate the progress percentage
+      
       pb <- progressBar(
-        id = paste0("progress", i),
-        value = progress,
-        display_pct = TRUE,
-        status = "primary",
-        title = paste(loan_title, "- $", loan_value)
+        value = progress
       )
-      progress_bars[[i]] <- div(pb, style = "margin-bottom: 10px;")
+      
+      div_container <- div(
+        span(loan_title, "-", loan_value),
+        pb,
+        style = "margin-bottom: 10px;"
+      )
+      
+      progress_bars[[i]] <- div_container
     }
     return(progress_bars)
   })
