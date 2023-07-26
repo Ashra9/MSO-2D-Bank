@@ -66,7 +66,66 @@ loan_select <- function(input,output,session, vals){
     # Enact withdrawals and ensure demand is met
     vals$withdrawals <- randomiser(gamestate$withdrawalMean, gamestate$withdrawalSTD)
     print(paste("Withdrawal amount:", vals$withdrawals))
-    # ......
+
+    print("This is the current cash balance:")
+    print(vals$cashOnHand)
+    print("This is the current loan data:")
+    print(vals$loanData)
+    #Note: when testing below chunk outside of app, comment out all the showModals and shinyAlerts.
+    if(vals$withdrawals <= vals$cashOnHand){
+      vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*vals$withdrawals)
+      print("No liquidation needed")
+    }else{
+      if(vals$percentage*sum(vals$loanData$loanValue)+ vals$cashOnHand < vals$withdrawals){
+        # print("Game has ended due to inability to meet withdrawal demand")
+        
+        #notification to tell player the game has ended
+        shinyalert("You do not have enough loans to liquidate and cover the withdrawal. The game has ended.", type = "error")
+      }else{
+        print("im here")
+        max_number_list <- getMaxLoan(vals$loanData)
+        
+        #window with drop-down selections on loans for players to select from to liquidate
+        showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
+                                            loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
+                                            loan.type.3.min=0, loan.type.3.max=max_number_list$three,
+                                            notenough = FALSE))
+        
+        
+        observeEvent(input$loanliquidatesubmission, {
+          removeModal()
+          vals$numberofeachtypeofloan <- c(input$loantype1, input$loantype2, input$loantype3)
+          eachtypeofloan <- c(1,2,3)
+          req(vals$numberofeachtypeofloan)
+          loansselected <- SelectLoans(vals$numberofeachtypeofloan, eachtypeofloan) #now assuming both are vectors of numbers
+          print('loans selected:')
+          print(loansselected) #for debugging
+          vals$numberofeachtypeofloan <- NULL
+          
+          result_list <- LiquidateLoans(vals$cashOnHand, vals$withdrawals, vals$loanData, loansselected, vals$percentage)
+          #print(percentage*result_list$removed_loans_value)
+          if(vals$percentage*result_list$removed_loans_value+vals$cashOnHand < vals$withdrawals){
+            # print("Did not meet withdrawal demand, liquidate more loans")
+            
+            # showModal(...) #window to show the loans selected are not enough to cover the withdrawal
+            showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
+                                                loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
+                                                loan.type.3.min=0, loan.type.3.max=max_number_list$three,
+                                                notenough = TRUE))
+          } else {
+            print(result_list) #for debugging
+            vals$loanData <- result_list$resultloanData
+            vals$cashOnHand <- result_list$resultcashbalance
+          }
+        })
+      }
+    }
+    
+    print("This is the current loan data:")
+    print(vals$loanData)
+    print("This is the current cash balance:")
+    print(vals$cashOnHand)
+    
     
     ### Start of new month
     # Update new month
