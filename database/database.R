@@ -71,7 +71,7 @@ getcashInventory <- function(month){
   #Create a template for the query with placeholders for playername and password
   querytemplate <- "SELECT * FROM cashInventory ci WHERE `month` = ?id1"
   query <- sqlInterpolate(conn, querytemplate,id1=month)
-  print(query)
+  ##print(query)
   result <- dbGetQuery(conn,query)
   
   dbDisconnect(conn)
@@ -84,7 +84,7 @@ updateCashInventory <- function(month, deposits, withdrawals, loanPayout, cashOn
   conn <- getAWSConnection()
   querytemplate <- "INSERT INTO cashInventory (month, deposits, withdrawals,loanPayout, cashOnHand) VALUES (?id1,?id2,?id3,?id4,?id5)"
   query <- sqlInterpolate(conn, querytemplate,id1=month,id2=deposits,id3=withdrawals, id4=loanPayout, id5=cashOnHand)
-  print(query) #for debug
+  ##print(query) #for debug
   success <- FALSE
   iter <- 0
   MAXITER <- 5
@@ -119,7 +119,7 @@ updateLoansPurchased <- function(purchase_list, current_month){
       for (num in 1:purchase_list$num[loantype]) {
         ##### Update loan table #####
         query <- sprintf("INSERT INTO loan (loanType, month) VALUES (%s, %s)", loantype, current_month)
-        print(query) #for debug
+        ##print(query) #for debug
         success <- FALSE
         iter <- 0
         MAXITER <- 5
@@ -142,11 +142,11 @@ updateLoansPurchased <- function(purchase_list, current_month){
         ##### Update loanInventory table #####
         # find latest loanID from loan table, which is the new loan that was just bought
         query <- "SELECT loanID FROM loan ORDER BY loanID DESC LIMIT 1"
-        print(query) #for debug
+        #print(query) #for debug
         result <- dbGetQuery(conn,query)
 
         query <- sprintf("INSERT INTO loanInventory (loanID) VALUES (%s)", result$loanID)
-        print(query) #for debug
+        #print(query) #for debug
         success <- FALSE
         iter <- 0
         MAXITER <- 5
@@ -193,7 +193,7 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
   # Query loans to remove
   query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
   query <- paste(query, loanID_left_in_query)
-  print(query) #for debug
+  #print(query) #for debug
   result <- dbGetQuery(conn,query)
   
   dbDisconnect(conn)
@@ -212,7 +212,7 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
     conn <- getAWSConnection()
     
     query <- sprintf("INSERT INTO loanCompleted (loanID, defaulted, liquidated, month) VALUES (%s, %s, %s, %s)", loanID, defaulted, liquidated, current_month)
-    print(query) #for debug
+    #print(query) #for debug
     success <- FALSE
     iter <- 0
     MAXITER <- 5
@@ -238,7 +238,7 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
   conn <- getAWSConnection()
   querytemplate <- "DELETE FROM loanInventory WHERE loanID NOT IN"
   query <- paste(querytemplate, loanID_left_in_query)
-  print(query) #for debug
+  #print(query) #for debug
   success <- FALSE
   iter <- 0
   MAXITER <- 5
