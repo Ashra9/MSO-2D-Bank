@@ -1,6 +1,7 @@
 source("usePackages.R")
 source("database/database.R")
 source("routes/HelperServerFunctions.R")
+source("routes/WithdrawalandLiquidateHelperfunctionsforshow.R")
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
 loadPkgs(pkgnames)
 #Define your custom theme
@@ -42,7 +43,10 @@ my_theme <- create_theme(
 dashboardUI <- function(id) {
   ns <- NS(id)
   useShinyjs()
-    tagList(
+  fluidPage(
+    fluidPage(
+      ),
+      tagList(
         dashboardPage(
           # freshTheme = my_theme,
           header = dashboardHeader(
@@ -78,26 +82,77 @@ dashboardUI <- function(id) {
                 tabName = "game",
                 gridPanel(
                   template = "sidebar-right",
-                  bs4Card(
+                  box(
                     title = "Current Stats",
                     width = 12,
-                    height = NULL,
-                    descriptionBlock(
-                      header = "1200", 
-                      text = "Total Cash",
-                      rightBorder = FALSE,
-                      marginBottom = FALSE
-                    ),
-                    descriptionBlock(
-                      number = "18%", 
-                      numberColor = "secondary", 
-                      numberIcon = icon("caret-down"),
-                      header = "1200", 
-                      text = "GOAL COMPLETION", 
-                      rightBorder = FALSE,
-                      marginBottom = FALSE
+                    
+                    fluidRow(
+                      bs4Card(
+                        background = "maroon",
+                        title = "Title",
+                        width = 4,
+                        height = NULL,
+                        descriptionBlock(
+                          header = "1200", 
+                          text = "Total Cash",
+                          rightBorder = FALSE,
+                          marginBottom = FALSE
+                        ),
+                        descriptionBlock(
+                          number = "18%", 
+                          numberColor = "secondary", 
+                          numberIcon = icon("caret-down"),
+                          header = "1200", 
+                          text = "GOAL COMPLETION", 
+                          rightBorder = FALSE,
+                          marginBottom = FALSE
+                        )
+                      ),
+                      bs4Card(
+                        background = "lime",
+                        title = "Title",
+                        width = 4,
+                        height = NULL,
+                        descriptionBlock(
+                          header = "1200", 
+                          text = "Total Cash",
+                          rightBorder = FALSE,
+                          marginBottom = FALSE
+                        ),
+                        descriptionBlock(
+                          number = "18%", 
+                          numberColor = "secondary", 
+                          numberIcon = icon("caret-down"),
+                          header = "1200", 
+                          text = "GOAL COMPLETION", 
+                          rightBorder = FALSE,
+                          marginBottom = FALSE
+                        )
+                      ),
+                      bs4Card(
+                        background = "info",
+                        title = "Title",
+                        width = 4,
+                        height = NULL,
+                        descriptionBlock(
+                          header = "1200", 
+                          text = "Total Cash",
+                          rightBorder = FALSE,
+                          marginBottom = FALSE
+                        ),
+                        descriptionBlock(
+                          number = "18%", 
+                          numberColor = "secondary", 
+                          numberIcon = icon("caret-down"),
+                          header = "1200", 
+                          text = "GOAL COMPLETION", 
+                          rightBorder = FALSE,
+                          marginBottom = FALSE
+                        )
+                      )
                     )
                   ),
+                 
                   actionButton(
                     ns("nextmonth"), 
                     "Next Month",
@@ -120,7 +175,7 @@ dashboardUI <- function(id) {
                     title = "Loan Purchasing",
                     width = 4,
                     #height = "100px",
-                    "Welcome to the dashboard!",
+                    "Select No. of each type of loan!",
                     numericInput(ns("loan1"), label = "Loan 1", value = 0, min=0),
                     numericInput(ns("loan2"), label = "Loan 2", value = 0, min=0),
                     numericInput(ns("loan3"), label = "Loan 3", value = 0, min=0)
@@ -134,9 +189,9 @@ dashboardUI <- function(id) {
                   box(
                     title = "State of each inventory",
                     width = 12,
-                    height = "100px",
-                    "Welcome to the dashboard!"
-                  )
+                    
+                    uiOutput(ns("progressTrackers"))
+                    )
                 )
               ),
               bs4TabItem(
@@ -166,6 +221,7 @@ dashboardUI <- function(id) {
         )
       )
     )
+  )
   
 }
 
@@ -177,21 +233,49 @@ dashboardServer <- function(id) {
       # Add any server logic here
       ns <- session$ns
       
-      # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=2)
+      # Initialise cash on hand with deposits
+      gamestate <- getGameState(1)
+      deposits <- randomiser(gamestate$depositsMean, gamestate$depositsSTD)
+      print(paste("Deposits amount:", deposits))
       
-      output$nextButton <- renderUI({
-        req(input$sidebar == "game")
-        tags$li(class = "dropdown", actionButton("nextmonth", "Next Month"))
-      })
+      # reactiveValues object for storing items like the user password
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=NULL, loanPayout=NULL)
+
       # when registering
       observeEvent(input$registerButton,{
         showModal(passwordModal())
       })
+      
       #check if the login is successfull, then go to tutorial for instructions
       login_checker(input,output, session)
-      # Check observation of next month's loans selected 
+      
+      # Check observation of next month
       loan_select(input,output,session, vals)
+      
+      #select loans to liquidate modal
+      selectLoansLiquidateModal()
+      
+      #liquidate loans event
+      LiquidateLoans(cashbalance=1400, withdrawalamount=1860, 
+                     loanData=data.frame(loanID = c(1,2,3,4,5), 
+                                         loanType=c(1,2,3,2,2), 
+                                         loanValue = c(200, 300, 600, 300, 300), 
+                                         durationToMaturity = c(3,1,2,2,3)), 
+                     loansselected=SelectLoans(c(2,1),c(2,1)), percentage=0.7)
+      #for the progress trackers
+      loanData <- data.frame(
+        loanID = c(1, 2),
+        loanType = c(1, 2),
+        loanValue = c(1000, 2000),
+        loanmaturity = c(2, 3),
+        loan_risk = c(0.03, 0.05)
+      )
+      #rendering the UI for progress tracker
+      output$progressTrackers <- renderUI({
+        stateofProgressUI(session)
+      })
+      #render the progress tracker logic
+      serverProgressTracker(input,output,loanData)
     }
   )
 }

@@ -89,7 +89,7 @@ loanData <- data.frame(
 loan_default_update <- function() {
   rows_to_remove <- c()
   for (i in 1:nrow(loanData)) {
-    risk <- loanData$loan_risk[i]
+    risk <- loanData$loan_risk[i]/12  
     if (runif(1) < risk) {
       rows_to_remove <- c(rows_to_remove, i)
     }
