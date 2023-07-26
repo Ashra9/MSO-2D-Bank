@@ -1,3 +1,4 @@
+source("routes/Loans.R")
 #Password modal for registering from ESA class
 passwordModal <- function(failed = FALSE) {
   modalDialog(
@@ -28,36 +29,13 @@ login_checker <- function(input,output,session){
 
 
 #Function for when the next month button is clicked
-loan_select <- function(input,output,session, vals){
+next_button <- function(input,output,session, vals){
   observeEvent(input$nextmonth,{
     ### End of current month
-    print("End of current month:")
-    print(vals$current_month)
+    print(paste("End of current month:", vals$current_month))
     
-    # Check cash balance first
-    loanTerms <- getloanTerms()
-    purchase_list = list(type=c(1,2,3), num=c(input$loan1,input$loan2,input$loan3))
-    loanTerms$num <- purchase_list$num
-    total_value_loans_purchased <- sum(loanTerms$num*loanTerms$loanValue)
-    print("Purchase List")
-    print(purchase_list)
-    print(paste("Cash on hand: ", vals$cashOnHand))
-    # Update loans purchased
-    if (total_value_loans_purchased < vals$cashOnHand) {
-      updateLoansPurchased(purchase_list, current_month=vals$current_month)
-      # update cash balance
-      vals$cashOnHand <- vals$cashOnHand - total_value_loans_purchased
-      print(paste("Cash balance after purchasing loans:", vals$cashOnHand))
-    }
-    else {
-      print("Not enough cash")
-      showModal(modalDialog(
-        title = "Insufficient Cash",
-        "You do not have enough cash to buy these loans.",
-        easyClose = TRUE
-      ))
-      return (NULL)
-    }
+    # update loans purchased
+    buy_loans(input, output, vals)
 
     # Get game state for withdrawal and deposits
     gamestate <- getGameState(vals$current_month)
@@ -130,27 +108,21 @@ loan_select <- function(input,output,session, vals){
     ### Start of new month
     # Update new month
     vals$current_month <- vals$current_month + 1
-    print("Start of new month:")
-    print(vals$current_month)
-    
+    print(paste("Start of new month:", vals$current_month))
+
     # Get loan data
     loanData <- getloanData(vals$current_month)
     print(loanData)
     
     # Update loans that reached maturity
-    loanData <- subset(loanData, loanData$durationToMaturity>0)
-    print("Loan Maturity")
-    print(loanData)
-    loanID_left_in_query <- generate_loanID_left_in_query(loanData)
-    vals$loanPayout <- updateLoansRemoved(loanID_left_in_query, defaulted=0, liquidated=0, current_month=3)
-    print(paste("Loan Payout: ", loanPayout))
+    loan_maturity(input, output, vals, loanData)
     
     # Update loans defaulted on
     # ......
     
     # Record updates in cash inventory
     vals$cashOnHand <- vals$cashOnHand + vals$deposits + vals$loanPayout
-    print(vals$cashOnHand)
+    print(paste("Cash on Hand:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
     
     # Update deposit amount for next month

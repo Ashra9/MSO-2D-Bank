@@ -256,21 +256,21 @@ dashboardServer <- function(id) {
       login_checker(input,output, session)
       
       # Check observation of next month
-      loan_select(input,output,session, vals)
+      next_button(input,output,session, vals)
       
       #select loans to liquidate modal
       selectLoansLiquidateModal()
       
       #liquidate loans event
-      LiquidateLoans(cashbalance=1400, withdrawalamount=1860, 
-                           loanData=data.frame(loanID = c(1,2,3,4,5), 
-                                               loanType=c(1,2,3,2,2), 
-                                               loanValue = c(200, 300, 600, 300, 300), 
-                                               durationToMaturity = c(3,1,2,2,3)), 
-                           loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7)
+      #LiquidateLoans(cashbalance=1400, withdrawalamount=1860, 
+      #                     loanData=data.frame(loanID = c(1,2,3,4,5), 
+      #                                         loanType=c(1,2,3,2,2), 
+      #                                         loanValue = c(200, 300, 600, 300, 300), 
+      #                                         durationToMaturity = c(3,1,2,2,3)), 
+      #                     loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7)
 
       #to fit the loans into a dataframe correctly -- needed for liquidate loans 
-      getMaxLoan()
+      #getMaxLoan()
       
       #for the progress trackers
       loanData <- data.frame(
