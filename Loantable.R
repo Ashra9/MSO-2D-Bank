@@ -10,11 +10,10 @@ loanData <- data.frame(
 )
 
 ui <- fluidPage(
-  box(
-    title = "State of each inventory",
-    width = 12,
-    height = "100px",
-    uiOutput("loanProgressBars")  # Display the progress bars
+  fluidRow(
+    column(width = 12,
+           uiOutput("loanProgressBars")  # Display the progress bars
+    )
   )
 )
 
@@ -28,6 +27,7 @@ server <- function(input, output) {
       progress <- 100 * (loan_duration / 5)  # Calculate the progress percentage
       
       pb <- progressBar(
+        id = paste0("loan_", i),  # Unique id for each progress bar
         value = progress
       )
       
