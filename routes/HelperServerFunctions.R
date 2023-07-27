@@ -148,13 +148,18 @@ next_button <- function(input,output,session, vals){
     vals$deposits <- randomiser(gamestate$depositsMean, gamestate$depositsSTD)
     print(paste("Deposits amount:", vals$deposits))
     
-    showModal(modalDialog(
-      title = "Deposits",
-      paste("Deposit amount:", vals$deposits),
-      easyClose = TRUE
-    ))
     vals$cashOnHand <- vals$cashOnHand + vals$deposits
     print(paste("Start of month cash on hand::", vals$cashOnHand))
+    
+    showModal(modalDialog(
+      title = "Deposits",
+      paste("Deposit amount:", vals$deposits, "\n",
+            "Loan payout amount:", vals$loanPayout, "\n",
+            "Loan default amount:",
+            "Cash on hand: ", vals$cashOnHand
+      ),
+      easyClose = FALSE
+    ))
     
     })
 }
