@@ -89,21 +89,21 @@ dashboardUI <- function(id) {
                     fluidRow(
                       bs4Card(
                         background = "maroon",
-                        title = "Title",
+                        title = uiOutput(ns("currMonth")),
                         width = 4,
                         height = NULL,
                         descriptionBlock(
-                          header = "1200", 
+                          header = uiOutput(ns("totalCash")), 
                           text = "Total Cash",
                           rightBorder = FALSE,
                           marginBottom = FALSE
                         ),
                         descriptionBlock(
-                          number = "18%", 
+                          number = "Placeholder", 
                           numberColor = "secondary", 
                           numberIcon = icon("caret-down"),
-                          header = "1200", 
-                          text = "GOAL COMPLETION", 
+                          header = "Placeholder", 
+                          text = "Placeholder", 
                           rightBorder = FALSE,
                           marginBottom = FALSE
                         )
@@ -114,17 +114,17 @@ dashboardUI <- function(id) {
                         width = 4,
                         height = NULL,
                         descriptionBlock(
-                          header = "1200", 
-                          text = "Total Cash",
+                          header = "Placeholder", 
+                          text = "Placeholder",
                           rightBorder = FALSE,
                           marginBottom = FALSE
                         ),
                         descriptionBlock(
-                          number = "18%", 
+                          number = "Placeholder", 
                           numberColor = "secondary", 
                           numberIcon = icon("caret-down"),
-                          header = "1200", 
-                          text = "GOAL COMPLETION", 
+                          header = "Placeholder", 
+                          text = "Placeholder", 
                           rightBorder = FALSE,
                           marginBottom = FALSE
                         )
@@ -135,17 +135,17 @@ dashboardUI <- function(id) {
                         width = 4,
                         height = NULL,
                         descriptionBlock(
-                          header = "1200", 
-                          text = "Total Cash",
+                          header = "Placeholder", 
+                          text = "Placeholder",
                           rightBorder = FALSE,
                           marginBottom = FALSE
                         ),
                         descriptionBlock(
-                          number = "18%", 
+                          number = "Placeholder", 
                           numberColor = "secondary", 
                           numberIcon = icon("caret-down"),
-                          header = "1200", 
-                          text = "GOAL COMPLETION", 
+                          header = "Placeholder", 
+                          text = "Placeholder", 
                           rightBorder = FALSE,
                           marginBottom = FALSE
                         )
@@ -242,7 +242,7 @@ dashboardServer <- function(id) {
       vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=NULL, loanPayout=NULL,
                             loanData = data.frame(loanID = c(1,2,3,4,5), 
                                                loanType=c(1,2,3,2,2), 
-                                               loanValue = c(200, 300, 600, 300, 300), 
+                                               loanValue = c(200, 300, 600, 300, 300),
                                                durationToMaturity = c(3,1,2,2,3)),
                             numberofeachtypeofloan=NULL,
                             percentage=0.7)
@@ -272,20 +272,18 @@ dashboardServer <- function(id) {
       #to fit the loans into a dataframe correctly -- needed for liquidate loans 
       #getMaxLoan()
       
-      #for the progress trackers
-      loanData <- data.frame(
-        loanID = c(1, 2),
-        loanType = c(1, 2),
-        loanValue = c(1000, 2000),
-        loanmaturity = c(2, 3),
-        loan_risk = c(0.03, 0.05)
-      )
       #rendering the UI for progress tracker
       output$progressTrackers <- renderUI({
         stateofProgressUI(session)
       })
       #render the progress tracker logic
-      serverProgressTracker(input,output,loanData)
+      serverProgressTracker(input,output,vals$loanData)
+      
+      #for updating the display cards
+      output$totalCash <- renderUI(vals$cashOnHand)
+      
+      #for updating the month no.
+      output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month))
     }
   )
 }

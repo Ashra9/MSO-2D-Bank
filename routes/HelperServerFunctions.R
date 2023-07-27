@@ -152,7 +152,7 @@ stateofProgressUI <- function(session){
 #server function for the progress tracker
 serverProgressTracker <- function(input, output, loanData) {
   output$loanTable <- renderTable({
-    loan_table <- data.frame("Loan Value" = loanData$loanValue, "Months to maturity" = loanData$loanmaturity)
+    loan_table <- data.frame("Loan Value" = loanData$loanValue, "Months to maturity" = loanData$durationToMaturity)
     colnames(loan_table) <- c("Loan Value", "Months to maturity")
     return(loan_table)
   })
