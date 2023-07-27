@@ -1,4 +1,4 @@
-buy_loans <- function(input, output, vals) {
+buy_loans <- function(input, output, vals, gamestate) {
   # Check cash balance first
   loanTerms <- getloanTerms()
   purchase_list = list(type=c(1,2,3), num=c(input$loan1,input$loan2,input$loan3))

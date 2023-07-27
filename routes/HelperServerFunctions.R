@@ -36,6 +36,7 @@ next_button <- function(input,output,session, vals){
     
     # update loans purchased
     buy_loans(input, output, vals)
+    
 
     # Get game state for withdrawal and deposits
     gamestate <- getGameState(vals$current_month)
@@ -44,6 +45,16 @@ next_button <- function(input,output,session, vals){
     # Enact withdrawals and ensure demand is met
     vals$withdrawals <- randomiser(gamestate$withdrawalMean, gamestate$withdrawalSTD)
     print(paste("Withdrawal amount:", vals$withdrawals))
+    showModal(modalDialog(
+      title = "Withdrawals",
+      paste("Withdrawal amount:", vals$withdrawals),
+      easyClose = FALSE
+    ))
+    
+    # Record updates in cash inventory
+    vals$cashOnHand <- vals$cashOnHand
+    print(paste("Cash on Hand:", vals$cashOnHand))
+    updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
 
     print("This is the current cash balance:")
     print(vals$cashOnHand)
@@ -109,6 +120,11 @@ next_button <- function(input,output,session, vals){
     # Update new month
     vals$current_month <- vals$current_month + 1
     print(paste("Start of new month:", vals$current_month))
+    showModal(modalDialog(
+      title = "Month",
+      paste("Start of new month:", vals$current_month),
+      easyClose = TRUE
+    ))
 
     # Get loan data
     loanData <- getloanData(vals$current_month)
@@ -116,18 +132,30 @@ next_button <- function(input,output,session, vals){
     
     # Update loans that reached maturity
     loan_maturity(input, output, vals, loanData)
+    if (vals$loanPayout > 0) {
+      showModal(modalDialog(
+        title = "Loan Payout",
+        paste("Loan Payout amount:", vals$loanPayout),
+        easyClose = TRUE
+      ))
+    }
+    vals$cashOnHand <- vals$cashOnHand + vals$loanPayout
     
     # Update loans defaulted on
     # ......
     
-    # Record updates in cash inventory
-    vals$cashOnHand <- vals$cashOnHand + vals$deposits + vals$loanPayout
-    print(paste("Cash on Hand:", vals$cashOnHand))
-    updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
-    
     # Update deposit amount for next month
     vals$deposits <- randomiser(gamestate$depositsMean, gamestate$depositsSTD)
     print(paste("Deposits amount:", vals$deposits))
+    
+    showModal(modalDialog(
+      title = "Deposits",
+      paste("Deposit amount:", vals$deposits),
+      easyClose = TRUE
+    ))
+    vals$cashOnHand <- vals$cashOnHand + vals$deposits
+    print(paste("Start of month cash on hand::", vals$cashOnHand))
+    
     })
 }
 
