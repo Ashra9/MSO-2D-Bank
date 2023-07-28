@@ -211,10 +211,14 @@ dashboardUI <- function(id) {
             ),
             bs4TabItem(
               tabName = "tutorial",
-              tags$div(
+              div(
                 class = "tab-content",  # Optional class for styling
                 tags$img(src = "Operational Concept.png", width = "100%", height = "100%")
               )
+            ),
+            bs4TabItem(
+              tabName = "leaderboard",
+              uiOutput(ns("ldbrd"))
             )
             # Add your dashboard content here
           )
@@ -287,6 +291,15 @@ dashboardServer <- function(id) {
       
       #for updating the month no.
       output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month))
+      
+      #for displaying leaderboard in leaderboard tab
+      output$ldbrd <- renderUI({
+        req(vals$cashOnHand,vals$playerid) # if vals$score is NULL, the controls will not be visible
+        tagList(
+          actionButton("publishscore", "Publish Your Score"),
+          tableOutput("leaderboard")
+        )
+      })
     }
   )
 }
