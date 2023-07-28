@@ -8,19 +8,20 @@ stateofProgressUI <- function(session){
 }
 
 # Server function for the progress tracker
-serverProgressTracker <- function(input, output, session) {
+serverProgressTracker <- function(input, output, loanData) {
   # Calculate the progress percentage and add it as a new column in loanData
-  loanData$progress <- 100 * (loanData$loanmaturity / 5)
+  silly <- loanData
+  silly$progress <- 100 * (silly$loanmaturity / 5)
   
   # Sort loanData by progress percentage in descending order
-  loanData <- loanData[order(-loanData$progress), ]
+  silly <- silly[order(-silly$progress), ]
   
   output$loanProgressBars <- renderUI({
     progress_bars <- list()
-    for (i in 1:nrow(loanData)) {
-      loan_value <- loanData$loanValue[i]
-      loan_title <- paste("Loan", loanData$loanID[i])
-      progress <- loanData$progress[i]
+    for (i in 1:nrow(silly)) {
+      loan_value <- silly$loanValue[i]
+      loan_title <- paste("Loan", silly$loanID[i])
+      progress <- silly$progress[i]
       
       pb <- progressBar(
         id = paste0("loan_", i),  # Unique id for each progress bar
@@ -39,14 +40,3 @@ serverProgressTracker <- function(input, output, session) {
   })
 }
 
-# Create the Shiny app
-ui <- fluidPage(
-  titlePanel("Loan Progress Tracker"),
-  stateofProgressUI(session)
-)
-
-server <- function(input, output, session) {
-  serverProgressTracker(input, output, session)
-}
-
-shinyApp(ui, server)
