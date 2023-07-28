@@ -30,9 +30,14 @@ login_checker <- function(input,output,session){
 
 #Function for when the next month button is clicked
 next_button <- function(input,output,session, vals){
+  
   observeEvent(input$nextmonth,{
     ### End of current month
     print(paste("End of current month:", vals$current_month))
+    
+    # Get loan data
+    vals$loanData <- getloanData(vals$current_month)
+    print(vals$loanData)
     
     # update loans purchased
     output <- buy_loans(input, output, vals)
@@ -72,6 +77,7 @@ next_button <- function(input,output,session, vals){
         
         #notification to tell player the game has ended
         shinyalert("You do not have enough loans to liquidate and cover the withdrawal. The game has ended.", type = "error")
+        return (NULL)
       }else{
         print("im here")
         max_number_list <- getMaxLoan(vals$loanData)
@@ -127,13 +133,9 @@ next_button <- function(input,output,session, vals){
       paste("Start of new month:", vals$current_month),
       easyClose = TRUE
     ))
-
-    # Get loan data
-    loanData <- getloanData(vals$current_month)
-    print(loanData)
     
     # Update loans that reached maturity
-    loan_maturity(input, output, vals, loanData)
+    loan_maturity(input, output, vals, vals$loanData)
     if (vals$loanPayout > 0) {
       showModal(modalDialog(
         title = "Loan Payout",
@@ -141,6 +143,7 @@ next_button <- function(input,output,session, vals){
         easyClose = TRUE
       ))
     }
+    vals$loanData <- subset(vals$loanData, vals$loanData$durationToMaturity>0)
     vals$cashOnHand <- vals$cashOnHand + vals$loanPayout
     
     # Update loans defaulted on
@@ -196,7 +199,7 @@ serverProgressTracker <- function(input, output, loanData) {
     progress_bars <- list()
     for (i in 1:nrow(loanData)) {
       loan_duration <- loanData$loanmaturity[i]
-      progress <- 100 * (loan_duration / 5)  # Calculate the progress percentage
+      progress <- 100 * (vals$loan_duration / 5)  # Calculate the progress percentage
       pb <- progressBar(label = paste0("progress", i), value = progress, status = "primary")
       progress_bars[[i]] <- div(pb, style = "margin-bottom: 10px;")
     }
