@@ -176,9 +176,9 @@ dashboardUI <- function(id) {
                     width = 4,
                     #height = "100px",
                     "Select No. of each type of loan!",
-                    numericInput(ns("loan1"), label = "Loan 1", value = 0, min=0),
-                    numericInput(ns("loan2"), label = "Loan 2", value = 0, min=0),
-                    numericInput(ns("loan3"), label = "Loan 3", value = 0, min=0)
+                    numericInput(ns("loan1"), label = "Loan 1 | Cost: $200 | Interest Rate: 1% | Default Rate: 50%", value = 0, min=0),
+                    numericInput(ns("loan2"), label = "Loan 2 | Cost: $300  | Interest Rate: 5% | Default Rate: 50%", value = 0, min=0),
+                    numericInput(ns("loan3"), label = "Loan 3 | Cost: $600  | Interest Rate: 10% | Default Rate: 50%", value = 0, min=0)
                   ),
                   box(
                     title = "Hello, Shiny!",
