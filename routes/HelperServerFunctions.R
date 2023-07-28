@@ -30,6 +30,8 @@ login_checker <- function(input,output,session){
 
 #Function for when the next month button is clicked
 next_button <- function(input,output,session, vals){
+  # Add any server logic here
+  ns <- session$ns
   
   observeEvent(input$nextmonth,{
     ### End of current month
@@ -55,14 +57,23 @@ next_button <- function(input,output,session, vals){
     showModal(modalDialog(
       title = "Withdrawals",
       paste("Withdrawal amount:", vals$withdrawals),
-      easyClose = FALSE
+      easyClose = FALSE,
+      footer = list(
+        actionButton(ns("confirmName"), "OK"),
+        modalButton("Cancel"))
     ))
     
+    return (gamestate)
+    })
+}
+
+after_withdrawal <- function(input, output, session, vals, gamestate) {
+  observeEvent(input$confirmName, {
     # Record updates in cash inventory
     vals$cashOnHand <- vals$cashOnHand
     print(paste("Cash on Hand:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
-
+    
     print("This is the current cash balance:")
     print(vals$cashOnHand)
     print("This is the current loan data:")
@@ -165,8 +176,7 @@ next_button <- function(input,output,session, vals){
       ),
       easyClose = FALSE
     ))
-    
-    })
+  })
 }
 
 # Given mean and standard deviation of bank deposit and withdrawal
@@ -206,3 +216,4 @@ serverProgressTracker <- function(input, output, loanData) {
     return(progress_bars)
   })
 }
+

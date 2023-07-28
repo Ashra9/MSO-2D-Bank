@@ -1,7 +1,6 @@
 source("usePackages.R")
 source("database/database.R")
 source("routes/HelperServerFunctions.R")
-source("routes/Xing Jun helper UI.R")
 source("routes/WithdrawalandLiquidateHelperfunctionsforshow.R")
 source("routes/Leaderboard Helper S&UI.R")
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
@@ -268,7 +267,8 @@ dashboardServer <- function(id) {
       })
       
       # Check observation of next month
-      next_button(input,output,session, vals)
+      gamestate <- next_button(input,output,session, vals)
+      after_withdrawal(input, output, session, vals, gamestate)
       
       #select loans to liquidate modal
       #selectLoansLiquidateModal()
