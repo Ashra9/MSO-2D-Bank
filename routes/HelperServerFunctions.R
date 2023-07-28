@@ -35,8 +35,10 @@ next_button <- function(input,output,session, vals){
     print(paste("End of current month:", vals$current_month))
     
     # update loans purchased
-    buy_loans(input, output, vals)
-    
+    output <- buy_loans(input, output, vals)
+    if (is.null(output)) {
+      return (NULL)
+    }
 
     # Get game state for withdrawal and deposits
     gamestate <- getGameState(vals$current_month)
