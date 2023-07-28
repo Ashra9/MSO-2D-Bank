@@ -12,7 +12,7 @@ loanData <- data.frame(
 
 stateofProgressUI <- function(session){
   fluidRow(
-    column(6, uiOutput(session$ns("loanProgressBars")))  # Display the progress bars in a column of width 6
+    uiOutput(session$ns("loanProgressBars")  # Display the progress bars in a column of width 6
   )
 }
 #server function for the progress tracker
@@ -48,3 +48,5 @@ serverProgressTracker <- function(input, output, loanData) {
     return(progress_bars)
   })
 }
+
+With
