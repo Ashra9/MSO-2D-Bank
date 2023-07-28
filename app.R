@@ -2,6 +2,7 @@ source("usePackages.R")
 source("database/database.R")
 source("routes/HelperServerFunctions.R")
 source("routes/WithdrawalandLiquidateHelperfunctionsforshow.R")
+source("routes/Leaderboard Helper S&UI.R")
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
 loadPkgs(pkgnames)
 #Define your custom theme
@@ -296,6 +297,10 @@ dashboardServer <- function(id) {
           actionButton("publishscore", "Publish Your Score"),
           tableOutput("leaderboard")
         )
+      })
+      #Publishes score to leaderboard
+      observeEvent(input$publishscore,{
+        publishScore(vals$playerid,vals$cashOnHand)
       })
     }
   )
