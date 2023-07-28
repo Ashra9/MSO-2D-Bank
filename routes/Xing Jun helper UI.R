@@ -1,24 +1,14 @@
-source("routes/Loans.R")
-
-#data to test
-loanData <- data.frame(
-  loanID = c(1, 2),
-  loanType = c(1, 2),
-  loanValue = c(1000, 2000),
-  loanmaturity = c(4, 3),
-  loan_risk = c(0.03, 0.05)
-)
 
 
+# UI function to display progress bars
 stateofProgressUI <- function(session){
   fluidRow(
-    uiOutput(session$ns("loanProgressBars")  # Display the progress bars in a column of width 6
+    uiOutput(session$ns("loanProgressBars"))  # Display the progress bars in a column of width 6
   )
 }
-#server function for the progress tracker
 
-
-serverProgressTracker <- function(input, output, loanData) {
+# Server function for the progress tracker
+serverProgressTracker <- function(input, output, session) {
   # Calculate the progress percentage and add it as a new column in loanData
   loanData$progress <- 100 * (loanData$loanmaturity / 5)
   
@@ -38,7 +28,7 @@ serverProgressTracker <- function(input, output, loanData) {
       )
       
       div_container <- div(
-        span(loan_title, "-", loan_value, "-", sprintf("%.2f%%", progress))),
+        span(loan_title, "-", loan_value, "-", sprintf("%.2f%%", progress)),
         pb,
         style = "margin-bottom: 10px;"
       )
@@ -49,4 +39,14 @@ serverProgressTracker <- function(input, output, loanData) {
   })
 }
 
-With
+# Create the Shiny app
+ui <- fluidPage(
+  titlePanel("Loan Progress Tracker"),
+  stateofProgressUI(session)
+)
+
+server <- function(input, output, session) {
+  serverProgressTracker(input, output, session)
+}
+
+shinyApp(ui, server)
