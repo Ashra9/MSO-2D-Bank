@@ -38,7 +38,7 @@ serverProgressTracker <- function(input, output, loanData) {
       )
       
       div_container <- div(
-        span(loan_title, "-", loan_value, "-", progress),
+        span(loan_title, "-", loan_value, "-", sprintf("%.2f%%", progress))),
         pb,
         style = "margin-bottom: 10px;"
       )
