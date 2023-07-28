@@ -8,7 +8,7 @@ stateofProgressUI <- function(session){
 }
 
 # Server function for the progress tracker
-serverProgressTracker <- function(input, output, session) {
+serverProgressTracker <- function(input, output, loanData) {
   # Calculate the progress percentage and add it as a new column in loanData
   loanData$progress <- 100 * (loanData$loanmaturity / 5)
   
@@ -39,14 +39,3 @@ serverProgressTracker <- function(input, output, session) {
   })
 }
 
-# Create the Shiny app
-ui <- fluidPage(
-  titlePanel("Loan Progress Tracker"),
-  stateofProgressUI(session)
-)
-
-server <- function(input, output, session) {
-  serverProgressTracker(input, output, session)
-}
-
-shinyApp(ui, server)
