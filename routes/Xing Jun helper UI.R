@@ -1,33 +1,33 @@
-buy_loans <- function(input, output, vals, gamestate) {
-  # Check cash balance first
-  loanTerms <- getloanTerms()
-  purchase_list = list(type=c(1,2,3), num=c(input$loan1,input$loan2,input$loan3))
-  loanTerms$num <- purchase_list$num
-  total_value_loans_purchased <- sum(loanTerms$num*loanTerms$loanValue)
-  print("Purchase List")
-  print(purchase_list)
-  print(paste("Cash on hand: ", vals$cashOnHand))
-  # Update loans purchased
-  if (total_value_loans_purchased < vals$cashOnHand) {
-    updateLoansPurchased(purchase_list, current_month=vals$current_month)
-    # update cash balance
-    vals$cashOnHand <- vals$cashOnHand - total_value_loans_purchased
-    print(paste("Cash balance after purchasing loans:", vals$cashOnHand))
-  }
-  else {
-    print("Not enough cash")
-    showModal(modalDialog(
-      title = "Insufficient Cash",
-      "You do not have enough cash to buy these loans.",
-      easyClose = TRUE
-    ))
-    return (NULL)
-  }
+stateofProgressUI <- function(session){
+  fluidRow(
+    column(6, uiOutput(session$ns("loanProgressBars")))  # Display the progress bars in a column of width 6
+  )
 }
+#server function for the progress tracker
 
-loan_maturity <- function(input, output, vals, loanData) {
-  print(paste("Loan Maturity", loanData))
-  loanID_left_in_query <- generate_loanID_left_in_query(loanData)
-  vals$loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=vals$current_month)
-  print(paste("Loan Payout: ", vals$loanPayout))
+
+serverProgressTracker <- function(input, output, loanData) {
+  output$loanProgressBars <- renderUI({
+    progress_bars <- list()
+    for (i in 1:nrow(loanData)) {
+      loan_value <- loanData$loanValue[i]
+      loan_title <- paste("Loan", loanData$loanID[i])
+      loan_duration <- loanData$loanmaturity[i]
+      progress <- 100 * (loan_duration / 5)  # Calculate the progress percentage
+      
+      pb <- progressBar(
+        id = paste0("loan_", i),  # Unique id for each progress bar
+        value = progress
+      )
+      
+      div_container <- div(
+        span(loan_title, "-", loan_value),
+        pb,
+        style = "margin-bottom: 10px;"
+      )
+      
+      progress_bars[[i]] <- div_container
+    }
+    return(progress_bars)
+  })
 }
