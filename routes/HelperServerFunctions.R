@@ -180,29 +180,3 @@ randomiser <- function(mean_val,std_dev){
   randomiser_output
 }
 
-#State Progress and bars
-stateofProgressUI <- function(session){
-  fluidRow(
-    column(6, tableOutput(session$ns("loanTable"))),  # Display the table in a column of width 6
-    column(6, uiOutput(session$ns("loanProgressBars")))  # Display the progress bars in a column of width 6
-  )
-}
-#server function for the progress tracker
-serverProgressTracker <- function(input, output, loanData) {
-  output$loanTable <- renderTable({
-    loan_table <- data.frame("Loan Value" = loanData$loanValue, "Months to maturity" = loanData$durationToMaturity)
-    colnames(loan_table) <- c("Loan Value", "Months to maturity")
-    return(loan_table)
-  })
-  
-  output$loanProgressBars <- renderUI({
-    progress_bars <- list()
-    for (i in 1:nrow(loanData)) {
-      loan_duration <- loanData$loanmaturity[i]
-      progress <- 100 * (vals$loan_duration / 5)  # Calculate the progress percentage
-      pb <- progressBar(label = paste0("progress", i), value = progress, status = "primary")
-      progress_bars[[i]] <- div(pb, style = "margin-bottom: 10px;")
-    }
-    return(progress_bars)
-  })
-}
