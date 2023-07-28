@@ -214,7 +214,8 @@ dashboardUI <- function(id) {
               tabName = "tutorial",
               div(
                 class = "tab-content",  # Optional class for styling
-                tags$img(src = "Operational Concept.png", width = "100%", height = "100%")
+                img(src = "Operational Concept.png", width = "100%", height = "100%"),
+                actionButton(ns("startGame"), "Play")
               )
             ),
             bs4TabItem(
@@ -259,6 +260,11 @@ dashboardServer <- function(id) {
       
       #check if the login is successfull, then go to tutorial for instructions
       login_checker(input,output, session)
+      
+      #after reading instructions and clicking the play button
+      observeEvent(input$startGame,{
+        updateTabItems(session, "sidebar", selected = "game")
+      })
       
       # Check observation of next month
       next_button(input,output,session, vals)
