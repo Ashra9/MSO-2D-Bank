@@ -185,33 +185,78 @@ generate_loanID_left_in_query <- function(loanData) {
 }
 
 # Delete loans from loanInventory that matured, liquidated due to inability to meet withdrawal demand, or defaulted on.
-updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, current_month){
-  
-  #open the connection
-  conn <- getAWSConnection()
-  
-  # Query loans to remove
-  query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
-  query <- paste(query, loanID_left_in_query)
-  #print(query) #for debug
-  result <- dbGetQuery(conn,query)
-  
-  dbDisconnect(conn)
-  
-  # Give value to loanPayout if loan has reached maturity
+updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_month){
   loanPayout <- 0
-  if (defaulted==0 & liquidated==0) {
-    print("There are loans that reached maturity")
-    result$payout <- result$loanValue*(1 + result$interest)^(result$loanDuration/12)
-    loanPayout <- sum(result$payout)
-  }
   
-  # Add removed loans to loans completed
-  for (loanID in result$loanID) {
+  if (nrow(subset(loanData, loanData$durationToMaturity==0)) > 0) {
+    loanData <- subset(loanData, loanData$durationToMaturity>0)
+    print(loanData)
+    loanID_left_in_query <- generate_loanID_left_in_query(loanData)
     #open the connection
     conn <- getAWSConnection()
+    if (nrow(subset(loanData, loanData$durationToMaturity>0)) > 0){
+      # Query loans to remove
+      query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
+      query <- paste(query, loanID_left_in_query)
+    }
+    else {   # hard code impossible values for loan ids not to be part of 
+      query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
+      query <- paste(query, "(", 10^10, ")")    
+    }
     
-    query <- sprintf("INSERT INTO loanCompleted (loanID, defaulted, liquidated, month) VALUES (%s, %s, %s, %s)", loanID, defaulted, liquidated, current_month)
+    #print(query) #for debug
+    result <- dbGetQuery(conn,query)
+    
+    dbDisconnect(conn)
+    
+    # Give value to loanPayout if loan has reached maturity
+    if (defaulted==0 & liquidated==0) {
+      print("There are loans that reached maturity")
+      result$payout <- result$loanValue*(1 + result$interest)^(result$loanDuration/12)
+      print(result)
+      loanPayout <- sum(result$payout)
+      print(paste("Loan Payout:", loanPayout))
+    }
+    
+    # Add removed loans to loans completed
+    for (loanID in result$loanID) {
+      #open the connection
+      conn <- getAWSConnection()
+      
+      query <- sprintf("INSERT INTO loanCompleted (loanID, defaulted, liquidated, month) VALUES (%s, %s, %s, %s)", loanID, defaulted, liquidated, current_month)
+      #print(query) #for debug
+      success <- FALSE
+      iter <- 0
+      MAXITER <- 5
+      while(!success & iter < MAXITER){
+        iter <- iter+1
+        tryCatch(
+          {  # This is not a SELECT query so we use dbExecute
+            result <- dbExecute(conn,query)
+            print("Score published")
+            success <- TRUE
+          }, error=function(cond){print("publishScore: ERROR")
+            print(cond)
+          }, 
+          warning=function(cond){print("publishScore: WARNING")
+            print(cond)},
+          finally = {}
+        )
+      } # end while loop
+      dbDisconnect(conn)
+    }
+    
+    # Delete loans from loanInventory
+    conn <- getAWSConnection()
+    if (nrow(subset(loanData, loanData$durationToMaturity>0)) > 0){
+      # Query loans to remove
+      querytemplate <- "DELETE FROM loanInventory WHERE loanID NOT IN"
+      query <- paste(querytemplate, loanID_left_in_query)
+    }
+    else {   # hard code impossible values for loan ids not to be part of 
+      query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
+      query <- paste(query, "(", 10^10, ")")    
+    }
     #print(query) #for debug
     success <- FALSE
     iter <- 0
@@ -231,14 +276,18 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
         finally = {}
       )
     } # end while loop
-    dbDisconnect(conn)
+    dbDisconnect(conn) 
   }
   
-  # Delete loans from loanInventory
+  # return loan payout
+  loanPayout
+}
+
+start_game_clear_tables <- function() {
+  ##### delete loan inventory table
   conn <- getAWSConnection()
-  querytemplate <- "DELETE FROM loanInventory WHERE loanID NOT IN"
-  query <- paste(querytemplate, loanID_left_in_query)
-  #print(query) #for debug
+  query <- "DELETE FROM loanInventory"
+  ##print(query) #for debug
   success <- FALSE
   iter <- 0
   MAXITER <- 5
@@ -259,8 +308,78 @@ updateLoansRemoved <- function(loanID_left_in_query, defaulted=0, liquidated=0, 
   } # end while loop
   dbDisconnect(conn)
   
-  # return loan payout
-  loanPayout
+  ##### delete loan completed table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM loanCompleted"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+  ##### delete loans table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM loan"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+  ##### delete cashInventory table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM cashInventory"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
 }
 
 ##### #####
@@ -270,12 +389,11 @@ test <- function(){
   getGameState(1)
   
   # start of the month data, prepare duration to maturity for calculations as well
-  loanData <- getloanData(current_month=3)
+  loanData <- getloanData(current_month=6)
   # after next button is clicked, purchase loans and add to database
   purchase_list = list(type=c(1,2,3), num=c(1,2,1))
   updateLoansPurchased(purchase_list, current_month=3)
-  generate_loanID_left_in_query(loanData)
-  loanPayout <- updateLoansRemoved(loanID_left_in_query="(1, 2, 3)", defaulted=0, liquidated=0, current_month=3)
+  loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=6)
   loanPayout
   
   getcashInventory(3)

@@ -26,9 +26,8 @@ buy_loans <- function(input, output, vals, gamestate) {
 }
 
 loan_maturity <- function(input, output, vals, loanData) {
-  loanData <- subset(loanData, loanData$durationToMaturity>0)
   print(paste("Loan Maturity", loanData))
   loanID_left_in_query <- generate_loanID_left_in_query(loanData)
-  vals$loanPayout <- updateLoansRemoved(loanID_left_in_query, defaulted=0, liquidated=0, current_month=3)
+  vals$loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=vals$current_month)
   print(paste("Loan Payout: ", vals$loanPayout))
 }

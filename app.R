@@ -233,6 +233,9 @@ dashboardServer <- function(id) {
       # Add any server logic here
       ns <- session$ns
       
+      # Clear database
+      start_game_clear_tables()
+      
       # Initialise cash on hand with deposits
       gamestate <- getGameState(1)
       deposits <- randomiser(gamestate$depositsMean, gamestate$depositsSTD)
