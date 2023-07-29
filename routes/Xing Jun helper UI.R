@@ -1,4 +1,5 @@
-
+source("usePackages.R")
+loadPkgs(c("sqldf","shiny","shinyalert","dplyr"))
 
 # UI function to display progress bars
 stateofProgressUI <- function(session){
@@ -7,24 +8,46 @@ stateofProgressUI <- function(session){
   )
 }
 
-# Server function for the progress tracker
+# Make sure you have shinyWidgets package installed
+# install.packages("shinyWidgets")
+
+# Make sure you have shinyWidgets package installed
+# install.packages("shinyWidgets")
+
 serverProgressTracker <- function(input, output, loanData) {
-  # Calculate the progress percentage and add it as a new column in loanData
-  silly <- loanData
-  silly$progress <- 100 * (silly$loanmaturity / 5)
+  vals <- reactiveValues(
+    cashOnHand = 1400,
+    numberofeachtypeofloan = NULL,
+    percentage = 0.7
+  )
   
-  # Sort loanData by progress percentage in descending order
-  silly <- silly[order(-silly$progress), ]
+  # Create a reactive expression for loanData
+  reactiveLoanData <- reactive({
+    data.frame(
+      loanID = c(1, 2, 3, 4, 5),
+      loanType = c(1, 2, 3, 2, 2),
+      loanValue = c(200, 300, 600, 300, 300),
+      durationToMaturity = c(3, 1, 2, 2, 3)
+    )
+  })
   
   output$loanProgressBars <- renderUI({
+    loanData <- reactiveLoanData()  # Access the reactiveLoanData using reactive context
+    silly <- loanData
+    silly$progress <- 100 * (silly$durationToMaturity / 5)
+    
+    silly <- silly[order(-silly$progress), ]
+    
     progress_bars <- list()
     for (i in 1:nrow(silly)) {
       loan_value <- silly$loanValue[i]
       loan_title <- paste("Loan", silly$loanID[i])
       progress <- silly$progress[i]
       
-      pb <- progressBar(
-        id = paste0("loan_", i),  # Unique id for each progress bar
+      pb_id <- paste0("loan_", i)  # Unique id for each progress bar
+      
+      pb <- shinyWidgets::progressBar(
+        id = pb_id,
         value = progress
       )
       
@@ -39,4 +62,37 @@ serverProgressTracker <- function(input, output, loanData) {
     return(progress_bars)
   })
 }
+
+
+
+
+
+
+
+# #State Progress and bars
+# stateofProgressUI <- function(session){
+#   fluidRow(
+#     column(6, tableOutput(session$ns("loanTable"))),  # Display the table in a column of width 6
+#     column(6, uiOutput(session$ns("loanProgressBars")))  # Display the progress bars in a column of width 6
+#   )
+# }
+# #server function for the progress tracker
+# serverProgressTracker <- function(input, output, loanData) {
+#   output$loanTable <- renderTable({
+#     loan_table <- data.frame("Loan Value" = loanData$loanValue, "Months to maturity" = loanData$durationToMaturity)
+#     colnames(loan_table) <- c("Loan Value", "Months to maturity")
+#     return(loan_table)
+#   })
+#   
+#   output$loanProgressBars <- renderUI({
+#     progress_bars <- list()
+#     for (i in 1:nrow(loanData)) {
+#       loan_duration <- loanData$loanmaturity[i]
+#       progress <- 100 * (vals$loan_duration / 5)  # Calculate the progress percentage
+#       pb <- progressBar(label = paste0("progress", i), value = progress, status = "primary")
+#       progress_bars[[i]] <- div(pb, style = "margin-bottom: 10px;")
+#     }
+#     return(progress_bars)
+#   })
+# }
 
