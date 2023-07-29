@@ -251,6 +251,7 @@ dashboardServer <- function(id) {
       # reactiveValues object for storing items like the user password
       vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,
                             loanData = NULL,
+                            gamestate = gamestate,
                             numberofeachtypeofloan=NULL,
                             percentage=0.7)
 
@@ -268,8 +269,8 @@ dashboardServer <- function(id) {
       })
       
       # Check observation of next month
-      gamestate <- next_button(input,output,session, vals)
-      after_withdrawal(input, output, session, vals, gamestate)
+      next_button(input,output,session, vals)
+      after_withdrawal(input, output, session, vals)
       
       #select loans to liquidate modal
       #selectLoansLiquidateModal()

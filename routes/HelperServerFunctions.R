@@ -48,27 +48,27 @@ next_button <- function(input,output,session, vals){
     }
 
     # Get game state for withdrawal and deposits
-    gamestate <- getGameState(vals$current_month)
-    print(gamestate)
+    vals$gamestate <- getGameState(vals$current_month)
+    print("Game State")
+    print(vals$gamestate)
     
     # Enact withdrawals and ensure demand is met
-    vals$withdrawals <- randomiser(gamestate$withdrawalMean, gamestate$withdrawalSTD)
+    vals$withdrawals <- randomiser(vals$gamestate$withdrawalMean, vals$gamestate$withdrawalSTD)
     print(paste("Withdrawal amount:", vals$withdrawals))
     showModal(modalDialog(
-      title = "Withdrawals",
+      title = sprintf("End of month %s", vals$current_month),
       paste("Withdrawal amount:", vals$withdrawals),
       easyClose = FALSE,
       footer = list(
-        actionButton(ns("confirmName"), "OK"),
-        modalButton("Cancel"))
+        actionButton(ns("endMonth"), "OK")
+ )
     ))
     
-    return (gamestate)
     })
 }
 
-after_withdrawal <- function(input, output, session, vals, gamestate) {
-  observeEvent(input$confirmName, {
+after_withdrawal <- function(input, output, session, vals) {
+  observeEvent(input$endMonth, {
     # Record updates in cash inventory
     vals$cashOnHand <- vals$cashOnHand
     print(paste("Cash on Hand:", vals$cashOnHand))
@@ -136,24 +136,17 @@ after_withdrawal <- function(input, output, session, vals, gamestate) {
     
     
     ### Start of new month
+
     # Update new month
     vals$current_month <- vals$current_month + 1
-    print(paste("Start of new month:", vals$current_month))
-    showModal(modalDialog(
-      title = "Month",
-      paste("Start of new month:", vals$current_month),
-      easyClose = TRUE
-    ))
+    
+    # Get new loan data
+    vals$loanData <- getloanData(vals$current_month)
+    print(vals$loanData)
     
     # Update loans that reached maturity
     loan_maturity(input, output, vals, vals$loanData)
-    if (vals$loanPayout > 0) {
-      showModal(modalDialog(
-        title = "Loan Payout",
-        paste("Loan Payout amount:", vals$loanPayout),
-        easyClose = TRUE
-      ))
-    }
+    
     vals$loanData <- subset(vals$loanData, vals$loanData$durationToMaturity>0)
     vals$cashOnHand <- vals$cashOnHand + vals$loanPayout
     
@@ -161,19 +154,18 @@ after_withdrawal <- function(input, output, session, vals, gamestate) {
     # ......
     
     # Update deposit amount for next month
-    vals$deposits <- randomiser(gamestate$depositsMean, gamestate$depositsSTD)
+    vals$deposits <- randomiser(vals$gamestate$depositsMean, vals$gamestate$depositsSTD)
     print(paste("Deposits amount:", vals$deposits))
     
     vals$cashOnHand <- vals$cashOnHand + vals$deposits
     print(paste("Start of month cash on hand::", vals$cashOnHand))
     
     showModal(modalDialog(
-      title = "Deposits",
-      paste("Deposit amount:", vals$deposits, "\n",
-            "Loan payout amount:", vals$loanPayout, "\n",
-            "Loan default amount:",
-            "Cash on hand: ", vals$cashOnHand
-      ),
+      title = sprintf("Start of month %s", vals$current_month),
+      paste("Deposit amount:", vals$deposits, "|"), 
+      paste("Loan payout amount:", vals$loanPayout, "|"),
+      paste("Loan default amount:","|"),
+      paste("Cash on hand: ", vals$cashOnHand),
       easyClose = FALSE
     ))
   })

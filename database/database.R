@@ -254,7 +254,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
       query <- paste(querytemplate, loanID_left_in_query)
     }
     else {   # hard code impossible values for loan ids not to be part of 
-      query <- "SELECT li.loanID AS loanID, lt.loanValue, lt.interest, lt.loanDuration FROM loanInventory li INNER JOIN loan l ON li.loanID = l.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE li.loanID NOT IN"
+      query <- "DELETE FROM loanInventory WHERE loanID NOT IN"
       query <- paste(query, "(", 10^10, ")")    
     }
     #print(query) #for debug
@@ -280,7 +280,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
   }
   
   # return loan payout
-  loanPayout
+  round(loanPayout, 2)
 }
 
 start_game_clear_tables <- function() {
@@ -389,11 +389,11 @@ test <- function(){
   getGameState(1)
   
   # start of the month data, prepare duration to maturity for calculations as well
-  loanData <- getloanData(current_month=6)
+  loanData <- getloanData(current_month=8)
   # after next button is clicked, purchase loans and add to database
   purchase_list = list(type=c(1,2,3), num=c(1,2,1))
   updateLoansPurchased(purchase_list, current_month=3)
-  loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=6)
+  loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=8)
   loanPayout
   
   getcashInventory(3)
