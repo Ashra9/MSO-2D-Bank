@@ -25,9 +25,15 @@ buy_loans <- function(input, output, vals, gamestate) {
   }
 }
 
-loan_maturity <- function(input, output, vals, loanData) {
-  print(paste("Loan Maturity", loanData))
-  loanID_left_in_query <- generate_loanID_left_in_query(loanData)
-  vals$loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=vals$current_month)
+loan_maturity <- function(input, output, vals) {
+  loanID_left_in_query <- generate_loanID_left_in_query(vals$loanData)
+  vals$loanPayout <- updateLoansRemoved(vals$loanData, defaulted=0, liquidated=0, current_month=vals$current_month)
   print(paste("Loan Payout: ", vals$loanPayout))
+}
+
+loan_default <- function(input, output, vals) {
+  print("Loan Default")
+  print(vals$loanData)
+  loanID_left_in_query <- generate_loanID_left_in_query(vals$loanData)
+  updateLoansRemoved(vals$loanData, defaulted=1, liquidated=0, current_month=vals$current_month)
 }

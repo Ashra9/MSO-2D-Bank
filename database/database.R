@@ -187,8 +187,10 @@ generate_loanID_left_in_query <- function(loanData) {
 # Delete loans from loanInventory that matured, liquidated due to inability to meet withdrawal demand, or defaulted on.
 updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_month){
   loanPayout <- 0
+  loanDefault <- 0
   
-  if (nrow(subset(loanData, loanData$durationToMaturity==0)) > 0) {
+  # only update database if there are loans that reach maturity, or loans that are defaulted on
+  if ((nrow(subset(loanData, loanData$durationToMaturity==0)) > 0 & defaulted == 0 & liquidated == 0) | defaulted == 1 | liquidated == 1) {
     loanData <- subset(loanData, loanData$durationToMaturity>0)
     print(loanData)
     loanID_left_in_query <- generate_loanID_left_in_query(loanData)
@@ -209,13 +211,19 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
     
     dbDisconnect(conn)
     
-    # Give value to loanPayout if loan has reached maturity
+    ### Give value to loanPayout if loan has reached maturity
     if (defaulted==0 & liquidated==0) {
       print("There are loans that reached maturity")
       result$payout <- result$loanValue*(1 + result$interest)^(result$loanDuration/12)
       print(result)
       loanPayout <- sum(result$payout)
       print(paste("Loan Payout:", loanPayout))
+    }
+    
+    ### Give value to loanDefault
+    if (defaulted==1 & liquidated==0) {
+      loanDefault <- sum(result$loanValue)
+      print(paste("Value of loans defaulted upon:", loanDefault))
     }
     
     # Add removed loans to loans completed
@@ -280,7 +288,11 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
   }
   
   # return loan payout
-  round(loanPayout, 2)
+  if (defaulted==0 & liquidated == 0) {return (round(loanPayout, 2))}
+  # return loan defaults
+  if (defaulted==1 & liquidated == 0) {return (round(loanDefault, 2))}
+  # return loan liquidated
+  if (defaulted==0 & liquidated == 1) {return (round(loanPayout, 2))}
 }
 
 start_game_clear_tables <- function() {
@@ -389,12 +401,14 @@ test <- function(){
   getGameState(1)
   
   # start of the month data, prepare duration to maturity for calculations as well
-  loanData <- getloanData(current_month=8)
+  loanData <- getloanData(current_month=4)
   # after next button is clicked, purchase loans and add to database
   purchase_list = list(type=c(1,2,3), num=c(1,2,1))
   updateLoansPurchased(purchase_list, current_month=3)
-  loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=8)
+  loanPayout <- updateLoansRemoved(loanData, defaulted=0, liquidated=0, current_month=4)
   loanPayout
+  loanDefault <- updateLoansRemoved(loanData, defaulted=1, liquidated=0, current_month=4)
+  loanDefault
   
   getcashInventory(3)
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)

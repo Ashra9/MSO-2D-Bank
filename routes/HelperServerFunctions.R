@@ -34,6 +34,11 @@ next_button <- function(input,output,session, vals){
   ns <- session$ns
   
   observeEvent(input$nextmonth,{
+    # Reset loan purchase buttons
+    updateNumericInput(session, "loan1", value = 0)
+    updateNumericInput(session, "loan2", value = 0)
+    updateNumericInput(session, "loan3", value = 0)
+    
     ### End of current month
     print(paste("End of current month:", vals$current_month))
     
@@ -145,13 +150,14 @@ after_withdrawal <- function(input, output, session, vals) {
     print(vals$loanData)
     
     # Update loans that reached maturity
-    loan_maturity(input, output, vals, vals$loanData)
+    loan_maturity(input, output, vals)
     
     vals$loanData <- subset(vals$loanData, vals$loanData$durationToMaturity>0)
     vals$cashOnHand <- vals$cashOnHand + vals$loanPayout
     
     # Update loans defaulted on
-    # ......
+    loan_default_update(vals)
+    loanDefault <- loan_default(input, output, vals)
     
     # Update deposit amount for next month
     vals$deposits <- randomiser(vals$gamestate$depositsMean, vals$gamestate$depositsSTD)
@@ -164,8 +170,8 @@ after_withdrawal <- function(input, output, session, vals) {
       title = sprintf("Start of month %s", vals$current_month),
       paste("Deposit amount:", vals$deposits, "|"), 
       paste("Loan payout amount:", vals$loanPayout, "|"),
-      paste("Loan default amount:","|"),
-      paste("Cash on hand: ", vals$cashOnHand),
+      paste("Cash on hand: ", vals$cashOnHand, "|"),
+      paste("Loan default amount:", loanDefault),
       easyClose = FALSE
     ))
   })
@@ -180,5 +186,23 @@ randomiser <- function(mean_val,std_dev){
   # Generate a random variable with the gamma distribution
   randomiser_output <- round(rgamma(n = 1, shape = shape_param, scale = scale_param), digits=2)
   randomiser_output
+}
+
+#  Loan default function
+loan_default_update <- function(vals) {
+  rows_to_remove <- c()
+  if (nrow(vals$loanData) > 0) {
+    for (i in 1:nrow(vals$loanData)) {
+      risk <- 1-(1-vals$loanData$risk[i])^(1/12)  
+      print(paste("Risk:",risk))
+      if (runif(1) < risk) {
+        print("Loan defaulted on")
+        rows_to_remove <- c(rows_to_remove, i)
+      }
+    }
+    if (length(rows_to_remove) > 0) {
+      vals$loanData <- vals$loanData[-rows_to_remove, ]
+    }
+  }
 }
 
