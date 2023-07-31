@@ -70,25 +70,13 @@ next_button <- function(input,output,session, vals){
     # Enact withdrawals and ensure demand is met
     vals$withdrawals <- randomiser(vals$gamestate$withdrawalMean, vals$gamestate$withdrawalSTD)
     print(paste("Withdrawal amount:", vals$withdrawals))
-    showModal(modalDialog(
-      title = sprintf("End of month %s", vals$current_month),
-      paste("Withdrawal amount:", vals$withdrawals),
-      easyClose = FALSE,
-      footer = list(
-        actionButton(ns("endMonth"), "OK")
- )
-    ))
     
-    })
-}
-
-after_withdrawal <- function(input, output, session, vals) {
-  observeEvent(input$endMonth, {
     # Record updates in cash inventory
     vals$cashOnHand <- vals$cashOnHand
     print(paste("Cash on Hand:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
     
+    ##### Withdrawal liquidation portion #####
     # Get loan data
     print("This is the current cash balance:")
     print(vals$cashOnHand)
@@ -99,6 +87,15 @@ after_withdrawal <- function(input, output, session, vals) {
     if(vals$withdrawals <= vals$cashOnHand){
       vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*vals$withdrawals)
       print("No liquidation needed")
+      showModal(modalDialog(
+        title = sprintf("End of month %s", vals$current_month),
+        paste("Withdrawal amount:", vals$withdrawals),
+        "Congratulations! Cash balance is enough to cover withdrawals!",
+        easyClose = FALSE,
+        footer = list(
+          actionButton(ns("endMonth"), "OK")
+        )
+      ))
     }else{
       if(vals$percentage*sum(vals$loanData$loanValue)+ vals$cashOnHand < vals$withdrawals){
         # print("Game has ended due to inability to meet withdrawal demand")
@@ -141,6 +138,15 @@ after_withdrawal <- function(input, output, session, vals) {
             print(result_list) #for debugging
             vals$loanData <- result_list$resultloanData
             vals$cashOnHand <- result_list$resultcashbalance
+            showModal(modalDialog(
+              title = sprintf("End of month %s", vals$current_month),
+              paste("Withdrawal amount:", vals$withdrawals),
+              "Congratulations! You have were able to meet withdrawal demand by prematurely liquidating some loans in your inventory!",
+              easyClose = FALSE,
+              footer = list(
+                actionButton(ns("endMonth"), "OK")
+              )
+            ))
           }
         })
       }
@@ -151,6 +157,11 @@ after_withdrawal <- function(input, output, session, vals) {
     print("This is the current cash balance:")
     print(vals$cashOnHand)
     
+    })
+}
+
+after_withdrawal <- function(input, output, session, vals) {
+  observeEvent(input$endMonth, {
     
     ### Start of new month
 
