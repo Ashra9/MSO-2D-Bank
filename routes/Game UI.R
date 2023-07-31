@@ -101,16 +101,13 @@ endgameUI <-function(session){
         column(12,
                h2("Congratulations!"),
                h4("You have completed the game."),
-               actionButton("reset", "Play Again")
+               actionButton(session$ns("reset"), "Play Again")
         )
      )
   )
 }
 endgameServer <- function(input, output, session, vals){
-  #update the endgame state to T
-  # if (valscurrent_month > 12){
-  #   vals$endgame <- "T"
-  # }
+
   output$ingame <- renderUI({
   #display game
   if (vals$endgame=="F"){
@@ -118,5 +115,8 @@ endgameServer <- function(input, output, session, vals){
   } else if(vals$endgame=="T"){
     endgameUI(session)
   }
+  })
+  observeEvent(input$reset,{
+    session$reload()
   })
 }

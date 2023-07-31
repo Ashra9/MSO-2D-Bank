@@ -157,6 +157,10 @@ after_withdrawal <- function(input, output, session, vals) {
     # Update new month
     vals$current_month <- vals$current_month + 1
     
+    #update the endgame state to T
+    if (vals$current_month > 3){
+      vals$endgame <- "T"
+    }
     # Get new loan data
     vals$loanData <- getloanData(vals$current_month)
     print(vals$loanData)
