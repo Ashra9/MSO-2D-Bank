@@ -34,10 +34,15 @@ next_button <- function(input,output,session, vals){
   ns <- session$ns
   
   observeEvent(input$nextmonth,{
-    # Reset loan purchase buttons
-    updateNumericInput(session, "loan1", value = 0)
-    updateNumericInput(session, "loan2", value = 0)
-    updateNumericInput(session, "loan3", value = 0)
+    if (!is.numeric(input$loan1) | !is.numeric(input$loan2 | !is.numeric(input$loan3))) {
+      # If it's not numeric, show an error message
+      showModal(modalDialog(
+        title = sprintf("Select Loans"),
+        paste("You need to assign a value to number of loans to purchase"),
+        easyClose = FALSE))
+      return (NULL)
+    }
+    
     
     ### End of current month
     print(paste("End of current month:", vals$current_month))
@@ -51,6 +56,11 @@ next_button <- function(input,output,session, vals){
     if (is.null(output)) {
       return (NULL)
     }
+    
+    # Reset loan purchase buttons
+    updateNumericInput(session, "loan1", value = 0)
+    updateNumericInput(session, "loan2", value = 0)
+    updateNumericInput(session, "loan3", value = 0)
 
     # Get game state for withdrawal and deposits
     vals$gamestate <- getGameState(vals$current_month)
@@ -79,9 +89,11 @@ after_withdrawal <- function(input, output, session, vals) {
     print(paste("Cash on Hand:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
     
+    # Get loan data
     print("This is the current cash balance:")
     print(vals$cashOnHand)
     print("This is the current loan data:")
+    vals$loanData <- getloanData(vals$current_month)
     print(vals$loanData)
     #Note: when testing below chunk outside of app, comment out all the showModals and shinyAlerts.
     if(vals$withdrawals <= vals$cashOnHand){
