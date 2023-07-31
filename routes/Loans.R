@@ -1,12 +1,15 @@
 buy_loans <- function(input, output, vals, gamestate) {
   # Check cash balance first
   loanTerms <- getloanTerms()
+  
+  # Retrieve loans purchased
   purchase_list = list(type=c(1,2,3), num=c(input$loan1,input$loan2,input$loan3))
   loanTerms$num <- purchase_list$num
   total_value_loans_purchased <- sum(loanTerms$num*loanTerms$loanValue)
   print("Purchase List")
   print(purchase_list)
   print(paste("Cash on hand: ", vals$cashOnHand))
+  
   # Update loans purchased
   if (total_value_loans_purchased < vals$cashOnHand) {
     updateLoansPurchased(purchase_list, current_month=vals$current_month)
