@@ -34,7 +34,7 @@ next_button <- function(input,output,session, vals){
   ns <- session$ns
   
   observeEvent(input$nextmonth,{
-    if (!is.numeric(input$loan1) | !is.numeric(input$loan2 | !is.numeric(input$loan3))) {
+    if (!is.numeric(input$loan1) | !is.numeric(input$loan2) | !is.numeric(input$loan3)) {
       # If it's not numeric, show an error message
       showModal(modalDialog(
         title = sprintf("Select Loans"),
