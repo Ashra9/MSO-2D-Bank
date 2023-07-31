@@ -92,7 +92,7 @@ dashboardUI <- function(id) {
                       bs4Card(
                         background = "maroon",
                         title = uiOutput(ns("currMonth")),
-                        width = 4,
+                        width = 6,
                         height = NULL,
                         descriptionBlock(
                           header = uiOutput(ns("totalCash")), 
@@ -113,28 +113,7 @@ dashboardUI <- function(id) {
                       bs4Card(
                         background = "lime",
                         title = "Title",
-                        width = 4,
-                        height = NULL,
-                        descriptionBlock(
-                          header = "Placeholder", 
-                          text = "Placeholder",
-                          rightBorder = FALSE,
-                          marginBottom = FALSE
-                        ),
-                        descriptionBlock(
-                          number = "Placeholder", 
-                          numberColor = "secondary", 
-                          numberIcon = icon("caret-down"),
-                          header = "Placeholder", 
-                          text = "Placeholder", 
-                          rightBorder = FALSE,
-                          marginBottom = FALSE
-                        )
-                      ),
-                      bs4Card(
-                        background = "info",
-                        title = "Title",
-                        width = 4,
+                        width = 6,
                         height = NULL,
                         descriptionBlock(
                           header = "Placeholder", 
