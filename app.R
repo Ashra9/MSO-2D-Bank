@@ -155,6 +155,9 @@ dashboardServer <- function(id) {
       observeEvent(input$startGame,{
         updateTabItems(session, "sidebar", selected = "game")
       })
+      
+      #display game UI
+      endgameServer(input,output,session,vals)
 
       
       # Check observation of next month

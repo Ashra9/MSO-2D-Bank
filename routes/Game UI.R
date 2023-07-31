@@ -108,17 +108,15 @@ endgameUI <-function(session){
 }
 endgameServer <- function(input, output, session, vals){
   #update the endgame state to T
-  if (vals$current_month > 12){
-    vals$endgame <- "T"
-  }
+  # if (valscurrent_month > 12){
+  #   vals$endgame <- "T"
+  # }
+  output$ingame <- renderUI({
   #display game
-  if (vals$endgame=="F") {
-    output$ingame <- renderUI({
-      ingameUI(session)
-    })
-  } else if(session$vals$endgame=="T"){
-    output$ingame <- renderUI({
-      endgameUI(session)
-    })
+  if (vals$endgame=="F"){
+    ingameUI(session)
+  } else if(vals$endgame=="T"){
+    endgameUI(session)
   }
+  })
 }
