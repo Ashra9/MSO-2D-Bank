@@ -152,7 +152,11 @@ server <- function(input, output, session){
         # print("Game has ended due to inability to meet withdrawal demand")
         
         #notification to tell player the game has ended
-        shinyalert("You do not have enough loans to liquidate and cover the withdrawal. The game has ended.", type = "error")
+        shinyalert("You do not have enough loans to liquidate and cover the withdrawal. The game has ended.", type = "error",
+                   callbackR=function(){
+                     #update the endgame state to T
+                     vals$endgame <- "T"
+                   })
       }else{
         print("im here")
         max_number_list <- getMaxLoan(vals$loanData)
