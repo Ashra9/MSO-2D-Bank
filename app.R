@@ -140,7 +140,8 @@ dashboardServer <- function(id) {
                             loanData = NULL,
                             gamestate = gamestate,
                             numberofeachtypeofloan=NULL,
-                            percentage=0.7)
+                            percentage=0.7,
+                            endgame="F")
 
       # when registering
       observeEvent(input$registerButton,{
