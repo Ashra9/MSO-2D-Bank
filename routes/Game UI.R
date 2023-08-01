@@ -80,10 +80,12 @@ ingameUI <- function(session){
       numericInput(session$ns("loan3"), label = "Loan 3 | Cost: $600  | Interest Rate: 10% | Default Rate: 50%", value = 0, min=0)
     ),
     box(
-      title = "Hello, Shiny!",
+      title = "Completed Loans (reached maturity)",
       width = 4,
       height = "100px",
-      "Welcome to the dashboard!"
+      uiOutput(session$ns("loanCompletedMaturity")),
+      uiOutput(session$ns("loanCompletedDefault")),
+      uiOutput(session$ns("loanCompletedLiquidated"))
     ),
     box(
       title = "State of each inventory",

@@ -156,6 +156,19 @@ getGameState <- function(current_month){
   result
 }
 
+getcompletedLoans <- function(defaulted, liquidated){
+  
+  #open the connection
+  conn <- getAWSConnection()
+  query <- sprintf("SELECT lc.month, lc.loanID, lt.loanValue FROM loanCompleted lc INNER JOIN loan l on l.loanID = lc.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE defaulted = %s AND liquidated = %s", defaulted, liquidated)
+  result <- dbGetQuery(conn,query)
+  
+  dbDisconnect(conn)
+  
+  # return the dataframe
+  result
+}
+
 getloanTerms <- function() {
   #open the connection
   conn <- getAWSConnection()

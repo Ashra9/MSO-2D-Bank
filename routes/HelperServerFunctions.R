@@ -207,8 +207,12 @@ after_withdrawal <- function(input, output, session, vals) {
       easyClose = FALSE
     ))
     
-    print("Server progress tracker")
-    #serverProgressTracker()
+    ### Update completed loans
+    # Update loan maturity
+    vals$completedLoansReachMaturity <- getcompletedLoans(0, 0)
+    # Update defaulted loans
+    vals$completedLoansDefaulted <- getcompletedLoans(1, 0)
+    # Update liquidated loans too !!!!
   })
 }
 

@@ -138,6 +138,7 @@ dashboardServer <- function(id) {
       # reactiveValues object for storing items like the user password
       vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,
                             loanData = NULL,
+                            completedLoansReachMaturity = NULL, completedLoansDefaulted = NULL, completedLoansLiquidated = NULL,
                             gamestate = gamestate,
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
@@ -182,8 +183,12 @@ dashboardServer <- function(id) {
       output$progressTrackers <- renderUI({
         stateofProgressUI(session)
       })
+      
       #render the progress tracker logic
       serverProgressTracker(input,output,vals)
+      
+      #render completed loans table
+      completedLoansTracker(input, output, vals)
       
       #for updating the display cards
       output$totalCash <- renderUI(vals$cashOnHand)
