@@ -204,7 +204,9 @@ after_withdrawal <- function(input, output, session, vals) {
       paste("Loan default amount:", loanDefault),
       easyClose = FALSE
     ))
-    serverProgressTracker()
+    
+    print("Server progress tracker")
+    #serverProgressTracker()
   })
 }
 

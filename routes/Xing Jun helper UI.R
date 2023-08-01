@@ -17,8 +17,10 @@ stateofProgressUI <- function(session){
 serverProgressTracker <- function(input, output, vals) {
   
     # Create a reactive expression for loanData
-    reactiveLoanData <- function(){
+    reactiveLoanData <- reactive({
+      print("XJ helper!!!!!!!")
       if (is.null(vals$loanData)) {
+        print("XJ helper null")
         data.frame(
           loanID = c(1, 2, 3, 4, 5),
           loanType = c(1, 2, 3, 2, 2),
@@ -26,11 +28,14 @@ serverProgressTracker <- function(input, output, vals) {
           durationToMaturity = c(3, 1, 2, 2, 3)
         )
       } else {
-        vals$loanData <-getloanData(current_month)  # Access the loanData using reactive context
+        print("XJ not null")
+        loanData <- getloanData(vals$current_month)  # Access the loanData using reactive context
+        loanData
       }
-    }
+    })
     
     output$loanProgressBars <- renderUI({
+      print("output")
       silly <- reactiveLoanData()
       print(silly)
       silly$progress <- 100 * (silly$durationToMaturity / 5)
