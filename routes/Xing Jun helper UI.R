@@ -14,53 +14,60 @@ stateofProgressUI <- function(session){
 # Make sure you have shinyWidgets package installed
 # install.packages("shinyWidgets")
 
-serverProgressTracker <- function(input, output, loanData) {
-  vals <- reactiveValues(
-    cashOnHand = 1400,
-    numberofeachtypeofloan = NULL,
-    percentage = 0.7
-  )
+serverProgressTracker <- function(input, output, vals) {
   
-  # Create a reactive expression for loanData
-  reactiveLoanData <- reactive({
-    data.frame(
-      loanID = c(1, 2, 3, 4, 5),
-      loanType = c(1, 2, 3, 2, 2),
-      loanValue = c(200, 300, 600, 300, 300),
-      durationToMaturity = c(3, 1, 2, 2, 3)
-    )
-  })
-  
-  output$loanProgressBars <- renderUI({
-    loanData <- reactiveLoanData()  # Access the reactiveLoanData using reactive context
-    silly <- loanData
-    silly$progress <- 100 * (silly$durationToMaturity / 5)
-    
-    silly <- silly[order(-silly$progress), ]
-    
-    progress_bars <- list()
-    for (i in 1:nrow(silly)) {
-      loan_value <- silly$loanValue[i]
-      loan_title <- paste("Loan", silly$loanID[i])
-      progress <- silly$progress[i]
-      
-      pb_id <- paste0("loan_", i)  # Unique id for each progress bar
-      
-      pb <- shinyWidgets::progressBar(
-        id = pb_id,
-        value = progress
-      )
-      
-      div_container <- div(
-        span(loan_title, "-", loan_value, "-", sprintf("%.2f%%", progress)),
-        pb,
-        style = "margin-bottom: 10px;"
-      )
-      
-      progress_bars[[i]] <- div_container
+    # Create a reactive expression for loanData
+    reactiveLoanData <- function(){
+      if (is.null(vals$loanData)) {
+        data.frame(
+          loanID = c(1, 2, 3, 4, 5),
+          loanType = c(1, 2, 3, 2, 2),
+          loanValue = c(200, 300, 600, 300, 300),
+          durationToMaturity = c(3, 1, 2, 2, 3)
+        )
+      } else {
+        vals$loanData <-getloanData(current_month)  # Access the loanData using reactive context
+      }
     }
-    return(progress_bars)
-  })
+    
+    output$loanProgressBars <- renderUI({
+      silly <- reactiveLoanData()
+      print(silly)
+      silly$progress <- 100 * (silly$durationToMaturity / 5)
+      silly <- silly[order(-silly$progress), ]
+      
+      progress_bars <- list()
+      for (i in 1:nrow(silly)) {
+        loan_value <- silly$loanValue[i]
+        loan_title <- paste("Loan", silly$loanID[i])
+        progress <- silly$progress[i]
+        
+        pb_id <- paste0("loan_", i)  # Unique id for each progress bar
+        
+        pb <- shinyWidgets::progressBar(
+          id = pb_id,
+          value = progress
+        )
+        
+        div_container <- div(
+          span(loan_title, "-", loan_value, "-", sprintf("%.2f%%", progress)),
+          pb,
+          style = "margin-bottom: 10px;"
+        )
+        
+        progress_bars[[i]] <- div_container
+      }
+      return(progress_bars)
+    })
+               
+               
+  
+
+}
+
+
+cash_balance_graph <- function(){
+  
 }
 
 
