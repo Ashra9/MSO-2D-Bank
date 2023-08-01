@@ -9,6 +9,129 @@
 source("usePackages.R")
 loadPkgs(c("tidyverse","shiny","DBI"))
 
+start_game_clear_tables <- function() {
+  ##### delete loan inventory table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM loanInventory"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+  ##### delete loan completed table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM loanCompleted"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+  ##### delete loans table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM loan"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+  ##### delete cashInventory table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM cashInventory"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+  ##### delete stats table
+  conn <- getAWSConnection()
+  query <- "DELETE FROM stats"
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+  
+}
+
 getAWSConnection <- function(){
   conn <- dbConnect(
     drv = RMySQL::MySQL(),
@@ -106,6 +229,31 @@ updateCashInventory <- function(month, deposits, withdrawals, loanPayout, cashOn
   dbDisconnect(conn)
 }
 
+updateStats <- function(month, loanDefault){
+  conn <- getAWSConnection()
+  querytemplate <- "INSERT INTO stats (month, loanDefault) VALUES (?id1, ?id2)"
+  query <- sqlInterpolate(conn, querytemplate,id1=month, id2=loanDefault)
+  ##print(query) #for debug
+  success <- FALSE
+  iter <- 0
+  MAXITER <- 5
+  while(!success & iter < MAXITER){
+    iter <- iter+1
+    tryCatch(
+      {  # This is not a SELECT query so we use dbExecute
+        result <- dbExecute(conn,query)
+        print("Score published")
+        success <- TRUE
+      }, error=function(cond){print("publishScore: ERROR")
+        print(cond)
+      }, 
+      warning=function(cond){print("publishScore: WARNING")
+        print(cond)},
+      finally = {}
+    )
+  } # end while loop
+  dbDisconnect(conn)
+}
 
 ##### Update Loan Inventory #####
 
@@ -293,105 +441,6 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
   if (defaulted==1 & liquidated == 0) {return (round(loanDefault, 2))}
   # return loan liquidated
   if (defaulted==0 & liquidated == 1) {return (round(loanPayout, 2))}
-}
-
-start_game_clear_tables <- function() {
-  ##### delete loan inventory table
-  conn <- getAWSConnection()
-  query <- "DELETE FROM loanInventory"
-  ##print(query) #for debug
-  success <- FALSE
-  iter <- 0
-  MAXITER <- 5
-  while(!success & iter < MAXITER){
-    iter <- iter+1
-    tryCatch(
-      {  # This is not a SELECT query so we use dbExecute
-        result <- dbExecute(conn,query)
-        print("Score published")
-        success <- TRUE
-      }, error=function(cond){print("publishScore: ERROR")
-        print(cond)
-      }, 
-      warning=function(cond){print("publishScore: WARNING")
-        print(cond)},
-      finally = {}
-    )
-  } # end while loop
-  dbDisconnect(conn)
-  
-  ##### delete loan completed table
-  conn <- getAWSConnection()
-  query <- "DELETE FROM loanCompleted"
-  ##print(query) #for debug
-  success <- FALSE
-  iter <- 0
-  MAXITER <- 5
-  while(!success & iter < MAXITER){
-    iter <- iter+1
-    tryCatch(
-      {  # This is not a SELECT query so we use dbExecute
-        result <- dbExecute(conn,query)
-        print("Score published")
-        success <- TRUE
-      }, error=function(cond){print("publishScore: ERROR")
-        print(cond)
-      }, 
-      warning=function(cond){print("publishScore: WARNING")
-        print(cond)},
-      finally = {}
-    )
-  } # end while loop
-  dbDisconnect(conn)
-  
-  ##### delete loans table
-  conn <- getAWSConnection()
-  query <- "DELETE FROM loan"
-  ##print(query) #for debug
-  success <- FALSE
-  iter <- 0
-  MAXITER <- 5
-  while(!success & iter < MAXITER){
-    iter <- iter+1
-    tryCatch(
-      {  # This is not a SELECT query so we use dbExecute
-        result <- dbExecute(conn,query)
-        print("Score published")
-        success <- TRUE
-      }, error=function(cond){print("publishScore: ERROR")
-        print(cond)
-      }, 
-      warning=function(cond){print("publishScore: WARNING")
-        print(cond)},
-      finally = {}
-    )
-  } # end while loop
-  dbDisconnect(conn)
-  
-  ##### delete cashInventory table
-  conn <- getAWSConnection()
-  query <- "DELETE FROM cashInventory"
-  ##print(query) #for debug
-  success <- FALSE
-  iter <- 0
-  MAXITER <- 5
-  while(!success & iter < MAXITER){
-    iter <- iter+1
-    tryCatch(
-      {  # This is not a SELECT query so we use dbExecute
-        result <- dbExecute(conn,query)
-        print("Score published")
-        success <- TRUE
-      }, error=function(cond){print("publishScore: ERROR")
-        print(cond)
-      }, 
-      warning=function(cond){print("publishScore: WARNING")
-        print(cond)},
-      finally = {}
-    )
-  } # end while loop
-  dbDisconnect(conn)
-  
 }
 
 ##### #####

@@ -71,11 +71,6 @@ next_button <- function(input,output,session, vals){
     vals$withdrawals <- randomiser(vals$gamestate$withdrawalMean, vals$gamestate$withdrawalSTD)
     print(paste("Withdrawal amount:", vals$withdrawals))
     
-    # Record updates in cash inventory
-    vals$cashOnHand <- vals$cashOnHand
-    print(paste("Cash on Hand:", vals$cashOnHand))
-    updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
-    
     ##### Withdrawal liquidation portion #####
     # Get loan data
     print("This is the current cash balance:")
@@ -157,6 +152,12 @@ next_button <- function(input,output,session, vals){
     print("This is the current cash balance:")
     print(vals$cashOnHand)
     
+    # Record updates in cash inventory
+    vals$cashOnHand <- vals$cashOnHand
+    print(paste("Cash on Hand:", vals$cashOnHand))
+    updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
+    
+    
     })
 }
 
@@ -185,6 +186,7 @@ after_withdrawal <- function(input, output, session, vals) {
     # Update loans defaulted on
     loan_default_update(vals)
     loanDefault <- loan_default(input, output, vals)
+    updateStats(vals$current_month, loanDefault)
     
     # Update deposit amount for next month
     vals$deposits <- randomiser(vals$gamestate$depositsMean, vals$gamestate$depositsSTD)
