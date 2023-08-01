@@ -16,29 +16,23 @@ stateofProgressUI <- function(session){
 
 serverProgressTracker <- function(input, output, vals) {
   
-    # Create a reactive expression for loanData
-    reactiveLoanData <- reactive({
-      print("XJ helper!!!!!!!")
-      if (is.null(vals$loanData)) {
-        print("XJ helper null")
-        data.frame(
-          loanID = c(1, 2, 3, 4, 5),
-          loanType = c(1, 2, 3, 2, 2),
-          loanValue = c(200, 300, 600, 300, 300),
-          durationToMaturity = c(3, 1, 2, 2, 3)
-        )
-      } else {
-        print("XJ not null")
-        loanData <- getloanData(vals$current_month)  # Access the loanData using reactive context
-        loanData
-      }
-    })
-    
     output$loanProgressBars <- renderUI({
+      
       print("output")
-      silly <- reactiveLoanData()
+      silly <- vals$loanData
       print(silly)
-      silly$progress <- 100 * (silly$durationToMaturity / 5)
+      print(is.null(silly))
+      print(nrow(silly))
+      
+      if (is.null(silly)) {
+        print("Silly is NULL")
+        return (NULL)
+      } else if (nrow(silly) == 0) {
+        print("Silly 0 rows")
+        return (NULL)
+      }
+      
+      silly$progress <- 100 * ((silly$loanDuration - silly$durationToMaturity)/silly$loanDuration)
       silly <- silly[order(-silly$progress), ]
       
       progress_bars <- list()
@@ -55,7 +49,7 @@ serverProgressTracker <- function(input, output, vals) {
         )
         
         div_container <- div(
-          span(loan_title, "-", loan_value, "-", sprintf("%.2f%%", progress)),
+          span(loan_title, "|", "Loan value - $", loan_value, "|", "Duration to maturity -", silly$durationToMaturity[i], "month", "- progress -", sprintf("%.2f%%", progress)),
           pb,
           style = "margin-bottom: 10px;"
         )

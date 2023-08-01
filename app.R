@@ -183,7 +183,7 @@ dashboardServer <- function(id) {
         stateofProgressUI(session)
       })
       #render the progress tracker logic
-      serverProgressTracker(input,output,vals$loanData)
+      serverProgressTracker(input,output,vals)
       
       #for updating the display cards
       output$totalCash <- renderUI(vals$cashOnHand)
