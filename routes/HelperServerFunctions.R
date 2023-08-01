@@ -107,7 +107,8 @@ next_button <- function(input,output,session, vals){
         showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
                                             loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
                                             loan.type.3.min=0, loan.type.3.max=max_number_list$three,
-                                            notenough = FALSE))
+                                            notenough = FALSE,
+                                            session))
         
         
         observeEvent(input$loanliquidatesubmission, {
@@ -129,7 +130,8 @@ next_button <- function(input,output,session, vals){
             showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
                                                 loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
                                                 loan.type.3.min=0, loan.type.3.max=max_number_list$three,
-                                                notenough = TRUE))
+                                                notenough = TRUE,
+                                                selectLoansLiquidateModal))
           } else {
             print(result_list) #for debugging
             vals$loanData <- result_list$resultloanData

@@ -21,20 +21,21 @@ loadPkgs(c("sqldf","shiny","shinyalert","dplyr"))
 selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2, 
                                       loan.type.2.min=0, loan.type.2.max=2, 
                                       loan.type.3.min=0, loan.type.3.max=2,
-                                      notenough = FALSE){
+                                      notenough = FALSE,
+                                      session){
   modalDialog(
     title = "Select loans to liquidate.",
-    numericInput("loantype1", "Select number of $200 Loans to liquidate", value = 0, 
+    numericInput(session$ns("loantype1"), "Select number of $200 Loans to liquidate", value = 0, 
                  min = loan.type.1.min, max = loan.type.1.max),
-    numericInput("loantype2", "Select number of $300 Loans to liquidate", value = 0, 
+    numericInput(session$ns("loantype2"), "Select number of $300 Loans to liquidate", value = 0, 
                  min = loan.type.2.min, max = loan.type.2.max),
-    numericInput("loantype3", "Select number of $600 Loans to liquidate", value = 0,
+    numericInput(session$ns("loantype3"), "Select number of $600 Loans to liquidate", value = 0,
                  min = loan.type.3.min, max = loan.type.3.max),
     if (notenough)
       div(tags$b("You have not selected enough loans to cover the withdrawal. Please select more loans.", style = "color: red;")),
     
     footer = tagList(
-      actionButton("loanliquidatesubmission", "Confirm loans to liquidate")
+      actionButton(session$ns("loanliquidatesubmission"), "Confirm loans to liquidate")
     )
     
   )
@@ -165,7 +166,8 @@ server <- function(input, output, session){
         showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
                                             loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
                                             loan.type.3.min=0, loan.type.3.max=max_number_list$three,
-                                            notenough = FALSE))
+                                            notenough = FALSE,
+                                            session))
       }
     }
 
@@ -188,7 +190,8 @@ server <- function(input, output, session){
             showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
                                                 loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
                                                 loan.type.3.min=0, loan.type.3.max=max_number_list$three,
-                                                notenough = TRUE))
+                                                notenough = TRUE,
+                                                session))
           } else {
             print(result_list) #for debugging
             vals$loanData <- result_list$resultloanData
