@@ -2,10 +2,12 @@
 source("usePackages.R")
 source("database/database.R")
 source("routes/HelperServerFunctions.R")
-source("routes/Xing Jun helper UI.R")
+source("routes/Progress Tracker.R")
 source("routes/WithdrawalandLiquidateHelperfunctionsforshow.R")
 source("routes/Leaderboard Helper S&UI.R")
 source("routes/Game UI.R")
+source("routes/Graphs.R")
+
 pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
 loadPkgs(pkgnames)
 #Define your custom theme
@@ -190,7 +192,30 @@ dashboardServer <- function(id) {
       
       #for updating the month no.
       output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month))
-
+      
+      # Render the cash graph plot
+      
+      cashGraphData <- function(vals){
+        data.frame(
+          Month = 1:vals$current_month,
+          CashOnHand = cumsum(c(vals$cashOnHand, rep(0, vals$current_month - 1)))
+        )
+      }
+      output$cashGraph <- renderPlot({
+        plot(
+          data = cashGraphData(vals),
+          x = Month,
+          y = CashOnHand,
+          type = "b",
+          xlab = "Month",
+          ylab = "Cash on Hand",
+          main = "Cash on Hand over Months",
+          col = "blue"
+        )
+      })
+      
+    
+      
       #for displaying leaderboard in leaderboard tab
       output$ldbrd <- renderUI({
         req(vals$cashOnHand,vals$playerid) # if vals$score is NULL, the controls will not be visible
