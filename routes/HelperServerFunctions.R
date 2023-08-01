@@ -1,4 +1,5 @@
 source("routes/Loans.R")
+source("routes/Xing Jun helper UI.R")
 #Password modal for registering from ESA class
 passwordModal <- function(failed = FALSE) {
   modalDialog(
@@ -203,6 +204,7 @@ after_withdrawal <- function(input, output, session, vals) {
       paste("Loan default amount:", loanDefault),
       easyClose = FALSE
     ))
+    serverProgressTracker()
   })
 }
 
