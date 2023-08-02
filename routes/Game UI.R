@@ -10,32 +10,11 @@ ingameUI <- function(session){
         bs4Card(
           background = "maroon",
           title = uiOutput(session$ns("currMonth")),
-          width = 6,
+          width = 12,
           height = NULL,
           descriptionBlock(
             header = uiOutput(session$ns("totalCash")), 
             text = "Total Cash",
-            rightBorder = FALSE,
-            marginBottom = FALSE
-          ),
-          descriptionBlock(
-            number = "Placeholder", 
-            numberColor = "secondary", 
-            numberIcon = icon("caret-down"),
-            header = "Placeholder", 
-            text = "Placeholder", 
-            rightBorder = FALSE,
-            marginBottom = FALSE
-          )
-        ),
-        bs4Card(
-          background = "lime",
-          title = "Title",
-          width = 6,
-          height = NULL,
-          descriptionBlock(
-            header = "Placeholder", 
-            text = "Placeholder",
             rightBorder = FALSE,
             marginBottom = FALSE
           ),

@@ -53,11 +53,11 @@ SelectLoans <- function(numberofeachtypeofloan,eachtypeofloan){
 }
 
 LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860, 
-                           loanData=data.frame(loanID = c(1,2,3,4), 
-                                               loanType=c(1,2,2,2), 
-                                               loanValue = c(200, 300, 300, 300), 
-                                               durationToMaturity = c(3,1,2,3)), 
-                           loansselected=SelectLoans(c(1,2),c(1,2)), percentage=0.7){
+                           loanData=data.frame(loanID = c(1,2,3,4,5), 
+                                               loanType=c(1,2,3,2,2), 
+                                               loanValue = c(200, 300, 600, 300, 300), 
+                                               durationToMaturity = c(3,1,5,2,3)), 
+                           loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7){
   
   # Keep track of loanValue of liquidated loans
   removed_loans_value = 0
@@ -155,11 +155,11 @@ ui <- fluidPage(
 #### Server Section
 #the following will be in the server function after some observe event of a customer withdrawing:
 server <- function(input, output, session){
-  vals <- reactiveValues(cashOnHand = 18.63, 
-                         loanData = data.frame(loanID = c(1,2), 
-                                               loanType=c(1,3), 
-                                               loanValue = c(200,600), 
-                                               durationToMaturity = c(1,6)),
+  vals <- reactiveValues(cashOnHand = 1400, 
+                         loanData = data.frame(loanID = c(1,2,3,4,5), 
+                                               loanType=c(1,2,3,2,2), 
+                                               loanValue = c(200, 300, 600, 300, 300), 
+                                               durationToMaturity = c(3,1,5,2,3)),
                          numberofeachtypeofloan=NULL,
                          percentage=0.7)
 
@@ -169,7 +169,7 @@ server <- function(input, output, session){
     print("This is the current loan data:")
     print(vals$loanData)
     
-    withdrawals <- 116.4 #as test
+    withdrawals <- 1860 #as test
     #Note: when testing below chunk outside of app, comment out all the showModals and shinyAlerts.
     if(withdrawals <= vals$cashOnHand){
       vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*withdrawals)
@@ -205,6 +205,7 @@ server <- function(input, output, session){
           print(loansselected) #for debugging
           print("going to set each type of loan selected to null")
           vals$numberofeachtypeofloan <- NULL
+          loansselected <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, withdrawals, vals$loanData, loansselected, vals$percentage)
           #print(percentage*result_list$removed_loans_value)
