@@ -75,6 +75,7 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
       
       # Find the rows to remove
       rows_to_remove <- sorted_rows[1:num_rows_to_remove, ]
+      print("rows to remove:")
       print(rows_to_remove) #for debugging
       
       # Calculate the loanValue of the loans that will be removed
