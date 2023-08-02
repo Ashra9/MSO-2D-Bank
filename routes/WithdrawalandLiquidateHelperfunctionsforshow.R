@@ -183,10 +183,8 @@ server <- function(input, output, session){
                                             loan.type.3.min=0, loan.type.3.max=max_number_list$three,
                                             notenough = FALSE,
                                             session))
-      }
-    }
-
-    observeEvent(input$loanliquidatesubmission, {
+        
+        observeEvent(input$loanliquidatesubmission, {
           removeModal()
           vals$numberofeachtypeofloan <- c(input$loantype1, input$loantype2, input$loantype3)
           eachtypeofloan <- c(1,2,3)
@@ -212,7 +210,11 @@ server <- function(input, output, session){
             vals$loanData <- result_list$resultloanData
             vals$cashOnHand <- result_list$resultcashbalance
           }
-        })
+        })  
+      }
+    }
+
+    
     
     print("This is the current loan data:")
     print(vals$loanData)
