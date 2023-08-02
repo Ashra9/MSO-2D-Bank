@@ -26,10 +26,10 @@ serverProgressTracker <- function(input, output, vals) {
       
       if (is.null(silly)) {
         print("Silly is NULL")
-        return (span("No loans in inventory currently, purchase some from the loans purchasing panel!"))
+        return (NULL)
       } else if (nrow(silly) == 0) {
         print("Silly 0 rows")
-        return (span("No loans in inventory currently, purchase some from the loans purchasing panel!"))
+        return (NULL)
       }
       
       silly$progress <- 100 * ((silly$loanDuration - silly$durationToMaturity)/silly$loanDuration)
@@ -49,7 +49,7 @@ serverProgressTracker <- function(input, output, vals) {
         )
         
         div_container <- div(
-          span(loan_title, "|", "Loan value - $", loan_value, "|", "Duration to maturity -", silly$durationToMaturity[i], "month", "| progress -", sprintf("%.2f%%", progress)),
+          span(loan_title, "|", "Loan value - $", loan_value, "|", "Duration to maturity -", silly$durationToMaturity[i], "month", "- progress -", sprintf("%.2f%%", progress)),
           pb,
           style = "margin-bottom: 10px;"
         )
@@ -58,6 +58,10 @@ serverProgressTracker <- function(input, output, vals) {
       }
       return(progress_bars)
     })
+               
+               
+  
+
 }
 
 completedLoansTracker <- function(input, output, vals) {
@@ -93,24 +97,6 @@ completedLoansTracker <- function(input, output, vals) {
         span("Loans that were defaulted on"),
         renderTable({
           vals$completedLoansDefaulted
-        })
-      )
-    }
-  })
-  
-  # Update loans that were liquidated
-  output$loanCompletedLiquidated <- renderUI({
-    if (is.null(vals$completedLoansLiquidated)) {
-      span("No loans that were liquidated yet!")
-    }
-    else if (nrow(vals$completedLoansLiquidated) == 0) {
-      span("No loans that were liquidated yet!")
-    }
-    else {
-      div(
-        span("Loans that were liquidated"),
-        renderTable({
-          vals$completedLoansLiquidated
         })
       )
     }
