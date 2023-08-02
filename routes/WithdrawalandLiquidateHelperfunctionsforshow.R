@@ -53,11 +53,11 @@ SelectLoans <- function(numberofeachtypeofloan,eachtypeofloan){
 }
 
 LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860, 
-                           loanData=data.frame(loanID = c(1,2,3,4,5), 
-                                               loanType=c(1,2,3,2,2), 
-                                               loanValue = c(200, 300, 600, 300, 300), 
-                                               durationToMaturity = c(3,1,2,2,3)), 
-                           loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7){
+                           loanData=data.frame(loanID = c(1,2,3,4), 
+                                               loanType=c(1,2,2,2), 
+                                               loanValue = c(200, 300, 300, 300), 
+                                               durationToMaturity = c(3,1,2,3)), 
+                           loansselected=SelectLoans(c(1,2),c(1,2)), percentage=0.7){
   
   # Keep track of loanValue of liquidated loans
   removed_loans_value = 0
@@ -66,6 +66,7 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
     loan_type <- loansselected$loan.type[i]
     num_rows_to_remove <- loansselected$no.of.each.type.of.loan[i]
     
+    print(loanData)
     # Filter the rows in loanData with loanValue equal to loan_type
     filtered_rows <- loanData[loanData$loanType == loan_type, ]
     
@@ -99,8 +100,33 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
 }
 
 getMaxLoan <- function(loanData){
-  loan_type_counts <- loanData %>%group_by(loanType) %>% tally()
-  result_list <- list(one = loan_type_counts[1,2], two = loan_type_counts[2,2], three = loan_type_counts[3,2])
+  # loan_type_counts <- loanData %>%group_by(loanType) %>% tally()
+  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 1),2])){
+  #   loan_type_counts[which(loan_type_counts$loanType == 1),2] <- 0
+  # }
+  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 2),2])){
+  #   loan_type_counts[which(loan_type_counts$loanType == 2),2] <- 0
+  # }
+  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 3),2])){
+  #   loan_type_counts[which(loan_type_counts$loanType == 3),2] <- 0
+  # }
+  # Group loanData by loanValue and count occurrences
+  loanData_counts <- loanData %>%
+    group_by(loanValue) %>%
+    summarize(Count = n())
+  
+  # Create a dataframe with all loanValues (200, 300, 600)
+  all_loanValues <- data.frame(loanValue = c(200, 300, 600))
+  
+  # Merge the two dataframes to get the desired structure
+  loan_type_counts <- merge(all_loanValues, loanData_counts, all.x = TRUE)
+  
+  # Fill NA values with 0 in the Count column
+  loan_type_counts$Count[is.na(loan_type_counts$Count)] <- 0
+  
+  result_list <- list(one = loan_type_counts[which(loan_type_counts$loanValue == 200),2], 
+                      two = loan_type_counts[which(loan_type_counts$loanValue == 300),2], 
+                      three = loan_type_counts[which(loan_type_counts$loanValue == 600),2])
   return(result_list)
 }
 
@@ -129,11 +155,11 @@ ui <- fluidPage(
 #### Server Section
 #the following will be in the server function after some observe event of a customer withdrawing:
 server <- function(input, output, session){
-  vals <- reactiveValues(cashOnHand = 1400, 
-                         loanData = data.frame(loanID = c(1,2,3,4,5), 
-                                               loanType=c(1,2,3,2,2), 
-                                               loanValue = c(200, 300, 600, 300, 300), 
-                                               durationToMaturity = c(3,1,2,2,3)),
+  vals <- reactiveValues(cashOnHand = 18.63, 
+                         loanData = data.frame(loanID = c(1,2), 
+                                               loanType=c(1,3), 
+                                               loanValue = c(200,600), 
+                                               durationToMaturity = c(1,6)),
                          numberofeachtypeofloan=NULL,
                          percentage=0.7)
 
@@ -143,7 +169,7 @@ server <- function(input, output, session){
     print("This is the current loan data:")
     print(vals$loanData)
     
-    withdrawals <- 1860 #as test
+    withdrawals <- 116.4 #as test
     #Note: when testing below chunk outside of app, comment out all the showModals and shinyAlerts.
     if(withdrawals <= vals$cashOnHand){
       vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*withdrawals)
@@ -168,10 +194,8 @@ server <- function(input, output, session){
                                             loan.type.3.min=0, loan.type.3.max=max_number_list$three,
                                             notenough = FALSE,
                                             session))
-      }
-    }
-
-    observeEvent(input$loanliquidatesubmission, {
+      
+        observeEvent(input$loanliquidatesubmission, {
           removeModal()
           vals$numberofeachtypeofloan <- c(input$loantype1, input$loantype2, input$loantype3)
           eachtypeofloan <- c(1,2,3)
@@ -179,6 +203,7 @@ server <- function(input, output, session){
           loansselected <- SelectLoans(vals$numberofeachtypeofloan, eachtypeofloan) #now assuming both are vectors of numbers
           print('loans selected:')
           print(loansselected) #for debugging
+          print("going to set each type of loan selected to null")
           vals$numberofeachtypeofloan <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, withdrawals, vals$loanData, loansselected, vals$percentage)
@@ -198,6 +223,12 @@ server <- function(input, output, session){
             vals$cashOnHand <- result_list$resultcashbalance
           }
         })
+      
+        
+     }
+    }
+
+    
     
     print("This is the current loan data:")
     print(vals$loanData)
