@@ -96,7 +96,8 @@ dashboardUI <- function(id) {
                     textInput(ns("usernameInput"), "Username"),
                     passwordInput(ns("passwordInput"), "Password"),
                     actionButton(ns("loginButton"), "Login"),
-                    actionButton(ns("registerButton"), "Register")
+                    actionButton(ns("registerButton"), "Register"),
+                    uiOutput(ns("loggedInAs"))
                   )
                 )
             ),
@@ -138,12 +139,13 @@ dashboardServer <- function(id) {
       print(paste("Deposits amount:", deposits))
       
       # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, gamevariantid=1, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,
                             loanData = NULL,
                             gamestate = gamestate,
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
                             endgame="F")
+<<<<<<< Updated upstream
       
 
       
@@ -151,9 +153,9 @@ dashboardServer <- function(id) {
       observeEvent(input$registerButton,{
         showModal(passwordModal())
       })
+=======
+>>>>>>> Stashed changes
       
-      #check if the login is successfull, then go to tutorial for instructions
-      login_checker(input,output, session)
       
       #after reading instructions and clicking the play button
       observeEvent(input$startGame,{
@@ -211,18 +213,65 @@ dashboardServer <- function(id) {
       })
       
     
+      #Login and register###################
+      # when registering
+      observeEvent(input$registerButton,{
+        showModal(passwordModal(session = session))
+      })
+      #check if the login is successfull, then go to tutorial for instructions
+      # login_checker(input,output, session)
       
+      # Fire some code if the user clicks the passwordok button
+      observeEvent(input$passwordok, {
+        # Check that password1 exists and it matches password2
+        if (str_length(input$password1) >0 && (input$password1 == input$password2)) {
+          #store the password and close the dialog
+          vals$password <- input$password1
+          # print(vals$password) # for debugging
+          vals$playername = registerPlayer(vals$password)
+          if (!is.null(vals$playername)){
+            vals$playerid <- getPlayerID(vals$playername,vals$password)
+          }
+          # print(vals$playerid) # for debugging
+          removeModal()
+        } else {
+          showModal(passwordModal(failed = TRUE, session))
+        }
+      })
+
+      # Fire some code if the user clicks the login button
+      observeEvent(input$loginButton, {
+        # Get the playerID and check if it is valid
+        playerid <- getPlayerID(input$usernameInput,input$passwordInput)
+        if (playerid>0) {
+          #store the playerid and playername and close the dialog
+          vals$playerid <- playerid
+          print(vals$playerid) # for debugging
+          vals$playername <- input$usernameInput
+          print(vals$playername) # for debugging
+          #goes to instructions page
+          updateTabItems(session, "sidebar", selected = "tutorial")
+        } else {
+          #show alert
+          print("Wrong credentials")
+        }
+      })
+      
+      # React to successful login
+      output$loggedInAs <- renderUI({
+        if (is.null(vals$playername))
+          "Not logged in yet."
+        else
+          vals$playername
+      })
+      
+      #Leaderboard####################
       #for displaying leaderboard in leaderboard tab
       output$ldbrd <- renderUI({
         req(vals$cashOnHand,vals$playerid) # if vals$score is NULL, the controls will not be visible
         tagList(
-          actionButton("publishscore", "Publish Your Score"),
-          tableOutput("leaderboard")
+          tableOutput("leadboard2")
         )
-      })
-      #Publishes score to leaderboard
-      observeEvent(input$publishscore,{
-        publishScore(vals$playerid,vals$cashOnHand)
       })
     }
   )
