@@ -119,6 +119,7 @@ next_button <- function(input,output,session, vals){
           loansselected <- SelectLoans(vals$numberofeachtypeofloan, eachtypeofloan) #now assuming both are vectors of numbers
           print('loans selected:')
           print(loansselected) #for debugging
+          print("going to set each type of loan selected to null")
           vals$numberofeachtypeofloan <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, vals$withdrawals, vals$loanData, loansselected, vals$percentage)
@@ -244,4 +245,3 @@ loan_default_update <- function(vals) {
     }
   }
 }
-
