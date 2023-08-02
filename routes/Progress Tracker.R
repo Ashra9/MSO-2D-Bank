@@ -64,3 +64,43 @@ serverProgressTracker <- function(input, output, vals) {
 
 }
 
+completedLoansTracker <- function(input, output, vals) {
+  
+  # Update loans that reached maturity
+  output$loanCompletedMaturity <- renderUI({
+    if (is.null(vals$completedLoansReachMaturity)) {
+      span("No loans that reached maturity yet!")
+    }
+    else if (nrow(vals$completedLoansReachMaturity) == 0) {
+      span("No loans that reached maturity yet!")
+    }
+    else {
+      div(
+        span("Loans that reached maturity"),
+        renderTable({
+          vals$completedLoansReachMaturity
+        })
+      )
+    }
+  })
+  
+  # Update loans that were defaulted on
+  output$loanCompletedDefault <- renderUI({
+    if (is.null(vals$completedLoansDefaulted)) {
+      span("No loans that were defaulted on yet!")
+    }
+    else if (nrow(vals$completedLoansDefaulted) == 0) {
+      span("No loans that were defaulted on yet!")
+    }
+    else {
+      div(
+        span("Loans that were defaulted on"),
+        renderTable({
+          vals$completedLoansDefaulted
+        })
+      )
+    }
+  })
+  
+}
+
