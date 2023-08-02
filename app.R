@@ -146,6 +146,7 @@ dashboardServer <- function(id) {
                             endgame="F")
       
 
+      
       # when registering
       observeEvent(input$registerButton,{
         showModal(passwordModal())
