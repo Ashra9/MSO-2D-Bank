@@ -142,6 +142,7 @@ dashboardServer <- function(id) {
                             loanData = NULL,
                             completedLoansReachMaturity = NULL, completedLoansDefaulted = NULL, completedLoansLiquidated = NULL,
                             gamestate = gamestate,
+                            cashInventory = NULL,
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
                             endgame="F")

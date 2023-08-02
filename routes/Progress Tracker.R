@@ -49,7 +49,7 @@ serverProgressTracker <- function(input, output, vals) {
         )
         
         div_container <- div(
-          span(loan_title, "|", "Loan value - $", loan_value, "|", "Duration to maturity -", silly$durationToMaturity[i], "month", "- progress -", sprintf("%.2f%%", progress)),
+          span(loan_title, "|", "Loan value - $", loan_value, "|", "Duration to maturity -", silly$durationToMaturity[i], "month", "| progress -", sprintf("%.2f%%", progress)),
           pb,
           style = "margin-bottom: 10px;"
         )
@@ -93,6 +93,24 @@ completedLoansTracker <- function(input, output, vals) {
         span("Loans that were defaulted on"),
         renderTable({
           vals$completedLoansDefaulted
+        })
+      )
+    }
+  })
+  
+  # Update loans that were liquidated
+  output$loanCompletedLiquidated <- renderUI({
+    if (is.null(vals$completedLoansLiquidated)) {
+      span("No loans that were liquidated yet!")
+    }
+    else if (nrow(vals$completedLoansLiquidated) == 0) {
+      span("No loans that were liquidated yet!")
+    }
+    else {
+      div(
+        span("Loans that were liquidated"),
+        renderTable({
+          vals$completedLoansLiquidated
         })
       )
     }
