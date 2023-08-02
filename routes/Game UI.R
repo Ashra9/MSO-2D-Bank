@@ -65,11 +65,10 @@ ingameUI <- function(session){
   ),
   fluidRow(
     box(
-      title = "Deposits and Withdrawals",
+      title = "Graphs",
       width = 4,
-      height = "100px",
-      "Welcome to the dashboard!"
-    ),
+      uiOutput(session$ns("graphs"))
+          ),
     box(
       title = "Loan Purchasing",
       width = 4,
@@ -82,7 +81,7 @@ ingameUI <- function(session){
     box(
       title = "Completed Loans (reached maturity)",
       width = 4,
-      height = "100px",
+      #height = "100px",
       uiOutput(session$ns("loanCompletedMaturity")),
       uiOutput(session$ns("loanCompletedDefault")),
       uiOutput(session$ns("loanCompletedLiquidated"))

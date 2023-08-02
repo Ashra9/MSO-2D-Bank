@@ -199,22 +199,8 @@ dashboardServer <- function(id) {
       #for updating the month no.
       output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month))
       
-      # Render the cash graph plot
-      
-      output$cashGraph <- renderPlot({
-        plot(
-          data = cashGraphData(vals),
-          x = Month,
-          y = CashOnHand,
-          type = "b",
-          xlab = "Month",
-          ylab = "Cash on Hand",
-          main = "Cash on Hand over Months",
-          col = "blue"
-        )
-      })
-      
-    
+      # plot graph
+      plotCashGraph(input, output, vals)
       
       #for displaying leaderboard in leaderboard tab
       output$ldbrd <- renderUI({

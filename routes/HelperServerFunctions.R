@@ -160,7 +160,9 @@ next_button <- function(input,output,session, vals){
     vals$cashOnHand <- vals$cashOnHand
     print(paste("Cash on Hand:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
-    vals$cashInventory <- getcashInventory(vals$current_month)
+    vals$cashInventory <- getcashInventory()
+    print("Cash Inventory")
+    print(vals$cashInventory)
     
     # Update loans that were liquidated
     loan_liquidated(input, output, vals)
