@@ -102,22 +102,35 @@ endgameUI <-function(session){
         column(12,
                h2("Congratulations!"),
                h4("You have completed the game."),
+               uiOutput(session$ns("endCash")),
+               actionButton(session$ns("publishscore"), "Publish Your Score"),
                actionButton(session$ns("reset"), "Play Again")
         )
      )
   )
 }
 endgameServer <- function(input, output, session, vals){
-
+  
   output$ingame <- renderUI({
-  #display game
-  if (vals$endgame=="F"){
+    #check if the player is logged in
+    if (is.null(vals$playername))
+      "Not logged in yet."
+    #display game
+    else if (vals$endgame=="F"){
     ingameUI(session)
   } else if(vals$endgame=="T"){
     endgameUI(session)
   }
   })
+  #when play again button is pressed, restart
   observeEvent(input$reset,{
     session$reload()
+  })
+  #renders the final cash value as the score
+  output$endCash <- renderUI(paste0("Final Cash Balance: $",vals$cashOnHand))
+  
+  #Publishes score to leaderboard
+  observeEvent(input$publishscore,{
+    publishScore(vals$playerid,vals$cashOnHand)
   })
 }
