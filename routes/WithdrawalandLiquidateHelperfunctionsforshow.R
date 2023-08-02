@@ -99,8 +99,23 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
 }
 
 getMaxLoan <- function(loanData){
-  loan_type_counts <- loanData %>%group_by(loanType) %>% tally()
-  result_list <- list(one = loan_type_counts[1,2], two = loan_type_counts[2,2], three = loan_type_counts[3,2])
+  # Group loanData by loanValue and count occurrences
+  loanData_counts <- loanData %>%
+    group_by(loanValue) %>%
+    summarize(Count = n())
+  
+  # Create a dataframe with all loanValues (200, 300, 600)
+  all_loanValues <- data.frame(loanValue = c(200, 300, 600))
+  
+  # Merge the two dataframes to get the desired structure
+  loan_type_counts <- merge(all_loanValues, loanData_counts, all.x = TRUE)
+  
+  # Fill NA values with 0 in the Count column
+  loan_type_counts$Count[is.na(loan_type_counts$Count)] <- 0
+  
+  result_list <- list(one = loan_type_counts[which(loan_type_counts$loanValue == 200),2], 
+                      two = loan_type_counts[which(loan_type_counts$loanValue == 300),2], 
+                      three = loan_type_counts[which(loan_type_counts$loanValue == 600),2])
   return(result_list)
 }
 
