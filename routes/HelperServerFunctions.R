@@ -1,32 +1,32 @@
 source("routes/Loans.R")
 source("routes/Progress Tracker.R")
 #Password modal for registering from ESA class
-passwordModal <- function(failed = FALSE, session) {
+passwordModal <- function(failed = FALSE) {
   modalDialog(
     title = "Create a new password",
-    passwordInput(session$ns("password1"), "Enter a new password:"),
-    passwordInput(session$ns("password2"), "Confirm by re-entering the new password:"),
+    passwordInput("password1", "Enter a new password:"),
+    passwordInput("password2", "Confirm by re-entering the new password:"),
     "If successful, you will be assigned a Player Name to go with this password.",
     if (failed)
       div(tags$b("The passwords do not match. Try again.", style = "color: red;")),
     
     footer = tagList(
       modalButton("Cancel"),
-      actionButton(session$ns("passwordok"), "OK")
+      actionButton("passwordok", "OK")
     )
   )
 }
 
 #function for when the login is sucessful, go to instructions in tutorial
-# login_checker <- function(input,output,session){
-#   observeEvent(input$loginButton,{
-#     #if credentials match
-#     if (TRUE) {
-#       #goes to instructions page
-#       updateTabItems(session, "sidebar", selected = "tutorial")
-#     }
-#   })
-# }
+login_checker <- function(input,output,session){
+  observeEvent(input$loginButton,{
+    #if credentials match
+    if (TRUE) {
+      #goes to instructions page
+      updateTabItems(session, "sidebar", selected = "tutorial")
+    }
+  })
+}
 
 
 #Function for when the next month button is clicked
@@ -122,6 +122,7 @@ next_button <- function(input,output,session, vals){
           vals$numberofeachtypeofloan <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, vals$withdrawals, vals$loanData, loansselected, vals$percentage)
+          print(result_list)
           #print(percentage*result_list$removed_loans_value)
           if(vals$percentage*result_list$removed_loans_value+vals$cashOnHand < vals$withdrawals){
             # print("Did not meet withdrawal demand, liquidate more loans")
@@ -173,7 +174,7 @@ after_withdrawal <- function(input, output, session, vals) {
     vals$current_month <- vals$current_month + 1
     
     #update the endgame state to T
-    if (vals$current_month > 3){
+    if (vals$current_month > 12){
       vals$endgame <- "T"
     }
     # Get new loan data
