@@ -121,6 +121,7 @@ next_button <- function(input,output,session, vals){
           print(loansselected) #for debugging
           print("going to set each type of loan selected to null")
           vals$numberofeachtypeofloan <- NULL
+          loansselected <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, vals$withdrawals, vals$loanData, loansselected, vals$percentage)
           #print(percentage*result_list$removed_loans_value)
@@ -245,3 +246,4 @@ loan_default_update <- function(vals) {
     }
   }
 }
+
