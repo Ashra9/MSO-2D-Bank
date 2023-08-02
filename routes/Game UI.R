@@ -83,7 +83,7 @@ ingameUI <- function(session){
       title = "Cash Balance",
       width = 4,
       height = "100px",
-      plotOutput("cashGraph")  # Add the plot inside the box
+      plotOutput(session$ns("cashGraph"))  # Add the plot inside the box
       
     ),
     box(
