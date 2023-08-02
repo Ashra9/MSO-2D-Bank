@@ -66,7 +66,7 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
     loan_type <- loansselected$loan.type[i]
     num_rows_to_remove <- loansselected$no.of.each.type.of.loan[i]
     
-    # Filter the rows in loanData with loanValue equal to loan_type
+    # Filter the rows in loanData with loanType equal to loan_type
     filtered_rows <- loanData[loanData$loanType == loan_type, ]
     
     if (num_rows_to_remove != 0 & nrow(filtered_rows) >= num_rows_to_remove) {
@@ -228,3 +228,4 @@ server <- function(input, output, session){
 }      
 
 shinyApp(ui, server)
+
