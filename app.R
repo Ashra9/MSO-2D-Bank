@@ -144,6 +144,7 @@ dashboardServer <- function(id) {
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
                             endgame="F")
+      
 
       # when registering
       observeEvent(input$registerButton,{
