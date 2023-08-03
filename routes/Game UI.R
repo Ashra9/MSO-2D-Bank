@@ -2,7 +2,7 @@ ingameUI <- function(session){
   fluidPage(
     fluidRow(
         bs4Card(
-          background = "maroon",
+          background = "orange",
           title = uiOutput(session$ns("currMonth")),
           width = 9,
           height = NULL,
