@@ -19,11 +19,11 @@ my_theme <- create_theme(
   ),
   bs4dash_yiq(
     contrasted_threshold = 10,
-    text_dark = "#FFF",
-    text_light = "#272c30"
+    text_dark = "#272c30",
+    text_light = "#FFF"
   ),
   bs4dash_layout(
-    main_bg = "#353c42"
+    main_bg = "seagreen"
   ),
   bs4dash_sidebar_light(
     bg = "#272c30",
@@ -35,9 +35,6 @@ my_theme <- create_theme(
   ),
   bs4dash_status(
     primary = "#5E81AC", danger = "#BF616A", light = "#272c30"
-  ),
-  bs4dash_color(
-    gray_900 = "#FFF", white = "#272c30"
   ),
   bs4dash_font(
     weight_bold = 900
@@ -51,7 +48,7 @@ dashboardUI <- function(id) {
   useShinyjs()
       tagList(
         dashboardPage(
-          # freshTheme = my_theme,
+          freshTheme = my_theme,
           header = dashboardHeader(
             h2("Game of Loans", style="color:#ff851b"),
             title = dashboardBrand(
@@ -88,6 +85,18 @@ dashboardUI <- function(id) {
               bs4TabItem(
                 tabName = "home",
                 # Login page UI
+                tags$style(HTML("
+    /* Custom styles for inverse color scheme */
+    .login-page {
+      background-color: #555; /* Dark background color */
+      color: #fff; /* Light text color */
+    }
+    .form {
+      background-color: #555; /* Dark background color for the form container */
+      color: #fff; /* Text color for input fields
+    }
+    /* Add more custom styles for other elements as needed */
+  ")),
                 div(
                   class = "login-page",
                   div(
