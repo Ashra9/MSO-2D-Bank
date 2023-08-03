@@ -34,8 +34,8 @@ ingameUI <- function(session){
     actionButton(
       session$ns("nextmonth"), 
       "Next Month",
-      status = "primary", 
-      outline = TRUE,
+      status = "primary",
+      outline = FALSE,
       flat = TRUE,
       size = "lg",
       class = "nxtbtn"
