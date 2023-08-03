@@ -24,7 +24,13 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
                                       notenough = FALSE,
                                       session){
   modalDialog(
-    title = "Select loans to liquidate.",
+    title = div(
+      tags$div(
+        style = "display: inline-block; margin-right: 10px;",
+        tags$img(src = "sprites/Monopoly men.png", height = "50px", width = "50px", alt = "Monopoly man")
+      ),
+      "Select loans to liquidate."
+    ),
     htmlOutput("needed"),
     tags$div(
       style = "display: flex; align-items: center;",

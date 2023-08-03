@@ -8,12 +8,24 @@ ingameUI <- function(session){
           height = NULL,
           fluidRow(
             bs4InfoBox(
-              title = "Total Cash", 
+              title = div(
+                tags$div(
+                  style = "display: inline-block; margin-right: 10px;",
+                  tags$img(src = "sprites/money.png", height = "50px", width = "50px", alt = "Monopoly man")
+                ),
+                "Total Cash"
+              ),
               value = uiOutput(session$ns("totalCash")),
               color = "info"
             ),
             box(
-              title = "State of each inventory",
+              title = div(
+                tags$div(
+                  style = "display: inline-block; margin-right: 10px;",
+                  tags$img(src = "sprites/inventory.png", height = "50px", width = "50px", alt = "Monopoly man")
+                ),
+                "State of each inventory"
+              ),
               width = 12,
               uiOutput(session$ns("progressTrackers"))
             )
@@ -36,12 +48,24 @@ ingameUI <- function(session){
     ),
   fluidRow(
     box(
-      title = "Graphs",
+      title = div(
+        tags$div(
+          style = "display: inline-block; margin-right: 10px;",
+          tags$img(src = "sprites/growth.png", height = "50px", width = "50px", alt = "Monopoly man")
+        ),
+        "Graphs"
+      ),
       width = 4,
       uiOutput(session$ns("graphs"))
           ),
     box(
-      title = "Loan Purchasing",
+      title = div(
+        tags$div(
+          style = "display: inline-block; margin-right: 10px;",
+          tags$img(src = "sprites/signing.png", height = "50px", width = "50px", alt = "Monopoly man")
+        ),
+        "Loan Purchasing"
+      ),
       width = 4,
       #height = "100px",
       "Select No. of each type of loan!",
@@ -50,7 +74,13 @@ ingameUI <- function(session){
       numericInput(session$ns("loan3"), label = "Loan 3 | Cost: $600  | Interest Rate: 10% | Default Rate: 50%", value = 0, min=0)
     ),
     box(
-      title = "Completed Loans (reached maturity)",
+      title = div(
+        tags$div(
+          style = "display: inline-block; margin-right: 10px;",
+          tags$img(src = "sprites/loading.png", height = "50px", width = "50px", alt = "Monopoly man")
+        ),
+        "Completed Loans"
+      ),
       width = 4,
       #height = "100px",
       uiOutput(session$ns("loanCompletedMaturity")),
