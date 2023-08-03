@@ -25,7 +25,11 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
                                       session){
   modalDialog(
     title = "Select loans to liquidate.",
-    htmlOutput("needed"),
+    tags$div(
+      style = "display: flex; align-items: center;",
+      tags$img(src = "sprites/Monopoly men.png", height = "100px", width = "100px", alt = "Monopoly man"),
+      htmlOutput("needed")
+    ),
     numericInput(session$ns("loantype1"), "Select number of $200 Loans to liquidate", value = 0, 
                  min = loan.type.1.min, max = loan.type.1.max),
     numericInput(session$ns("loantype2"), "Select number of $300 Loans to liquidate", value = 0, 
@@ -34,12 +38,11 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
                  min = loan.type.3.min, max = loan.type.3.max),
     if (notenough)
       div(tags$b("You have not selected enough loans to cover the withdrawal. Please select more loans.", style = "color: red;")),
-    
     footer = tagList(
       actionButton(session$ns("loanliquidatesubmission"), "Confirm loans to liquidate")
     )
-    
   )
+  
 }
 
 updateCashBalance <- function(cashbalance, newamt){
