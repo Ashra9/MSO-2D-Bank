@@ -196,6 +196,7 @@ server <- function(input, output, session){
           vals$numberofeachtypeofloan <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, withdrawals, vals$loanData, loansselected, vals$percentage)
+          print(result_list)
           #print(percentage*result_list$removed_loans_value)
           if(vals$percentage*result_list$removed_loans_value+vals$cashOnHand < withdrawals){
             # print("Did not meet withdrawal demand, liquidate more loans")
