@@ -29,6 +29,7 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
         style = "display: inline-block; margin-right: 10px;",
         tags$img(src = "sprites/Monopoly men.png", height = "50px", width = "50px", alt = "Monopoly man")
       ),
+      htmlOutput(session$ns("needed")),
       "Select loans to liquidate."
     ),
     numericInput(session$ns("loantype1"), "Select number of $200 Loans to liquidate", value = 0, 
