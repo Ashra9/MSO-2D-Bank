@@ -235,6 +235,17 @@ server <- function(input, output, session){
     print(vals$loanData)
     print("This is the current cash balance:")
     print(vals$cashOnHand)
+
+    output$needed <- renderUI({
+      line1 <- "Cash balance:"
+      line2 <- "Amount still needed:"
+      line3 <- "Note that only 70% of the value of liquidated loans will be added to your cash balance."
+      HTML(paste("<p>", 
+                 line1, vals$cashOnHand,"<br>", 
+                 line2, withdrawals - vals$cashOnHand, "<br>",
+                 line3,
+                 "</p>"))
+    })
   })
   
   
