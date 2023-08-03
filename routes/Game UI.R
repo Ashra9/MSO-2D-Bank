@@ -111,6 +111,7 @@ endgameServer <- function(input, output, session, vals){
   
   #Publishes score to leaderboard
   observeEvent(input$publishscore,{
+    updateTabItems(session, "sidebar", selected = "leaderboard")
     publishScore(vals$playerid,vals$gamevariantid,vals$cashOnHand)
   })
 }
