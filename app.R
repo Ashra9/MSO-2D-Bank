@@ -153,7 +153,7 @@ dashboardServer <- function(id) {
       })
       
       #check if the login is successfull, then go to tutorial for instructions
-      login_checker(input,output, session)
+      # login_checker(input,output, session)
       
       #after reading instructions and clicking the play button
       observeEvent(input$startGame,{
@@ -260,15 +260,14 @@ dashboardServer <- function(id) {
       output$ldbrd <- renderUI({
         req(vals$cashOnHand,vals$playerid) # if vals$score is NULL, the controls will not be visible
         tagList(
-          tableOutput("leadboard2"),
-          actionButton("publishscore", "Publish Your Score"),
-          tableOutput("leaderboard")
+          tableOutput(ns("leadboard2"))
         )
       })
-      #Publishes score to leaderboard
-      observeEvent(input$publishscore,{
-        publishScore(vals$playerid,vals$cashOnHand)
-      })
+      output$leadboard2 <- renderTable({
+        numclicks <- input$publishscore #to force a refresh whenever one of these buttons is clicked
+        leadboard2 <- getLeaderBoard(vals$gamevariantid)
+        leadboard2}
+      )
     }
   )
 }
