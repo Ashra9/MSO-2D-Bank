@@ -155,7 +155,7 @@ next_button <- function(input,output,session, vals){
     print(vals$loanData)
     print("This is the current cash balance:")
     print(vals$cashOnHand)
-
+    
     output$needed <- renderUI({
       line1 <- "Cash balance:"
       line2 <- "Amount still needed:"
@@ -171,7 +171,12 @@ next_button <- function(input,output,session, vals){
     vals$cashOnHand <- vals$cashOnHand
     print(paste("Cash on Hand:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
+    vals$cashInventory <- getcashInventory()
+    print("Cash Inventory")
+    print(vals$cashInventory)
     
+    # Update loans that were liquidated
+    loan_liquidated(input, output, vals)
     
     })
 }
@@ -185,7 +190,7 @@ after_withdrawal <- function(input, output, session, vals) {
     vals$current_month <- vals$current_month + 1
     
     #update the endgame state to T
-    if (vals$current_month > 3){
+    if (vals$current_month > 12){
       vals$endgame <- "T"
     }
     # Get new loan data
@@ -219,8 +224,13 @@ after_withdrawal <- function(input, output, session, vals) {
       easyClose = FALSE
     ))
     
-    print("Server progress tracker")
-    #serverProgressTracker()
+    ### Update completed loans
+    # Update loan maturity
+    vals$completedLoansReachMaturity <- getcompletedLoans(0, 0)
+    # Update defaulted loans
+    vals$completedLoansDefaulted <- getcompletedLoans(1, 0)
+    # Update liquidated loans
+    vals$completedLoansLiquidated <- getcompletedLoans(0, 1)
   })
 }
 

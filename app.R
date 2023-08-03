@@ -139,14 +139,21 @@ dashboardServer <- function(id) {
       print(paste("Deposits amount:", deposits))
       
       # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, gamevariantid=1, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,
-                            loanData = NULL,
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, gamevariantid=1, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,                            loanData = NULL,
                             completedLoansReachMaturity = NULL, completedLoansDefaulted = NULL, completedLoansLiquidated = NULL,
                             gamestate = gamestate,
+                            cashInventory = NULL,
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
                             endgame="F")
+
+      # when registering
+      observeEvent(input$registerButton,{
+        showModal(passwordModal())
+      })
       
+      #check if the login is successfull, then go to tutorial for instructions
+      login_checker(input,output, session)
       
       #after reading instructions and clicking the play button
       observeEvent(input$startGame,{
@@ -179,6 +186,7 @@ dashboardServer <- function(id) {
       output$progressTrackers <- renderUI({
         stateofProgressUI(session)
       })
+      
       #render the progress tracker logic
       serverProgressTracker(input,output,vals)
       
@@ -191,22 +199,9 @@ dashboardServer <- function(id) {
       #for updating the month no.
       output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month))
       
-      # Render the cash graph plot
+      # plot graph
+      plotCashGraph(input, output, vals)
       
-      output$cashGraph <- renderPlot({
-        plot(
-          data = cashGraphData(vals),
-          x = Month,
-          y = CashOnHand,
-          type = "b",
-          xlab = "Month",
-          ylab = "Cash on Hand",
-          main = "Cash on Hand over Months",
-          col = "blue"
-        )
-      })
-      
-    
       #Login and register###################
       # when registering
       observeEvent(input$registerButton,{
@@ -232,7 +227,7 @@ dashboardServer <- function(id) {
           showModal(passwordModal(failed = TRUE, session))
         }
       })
-
+      
       # Fire some code if the user clicks the login button
       observeEvent(input$loginButton, {
         # Get the playerID and check if it is valid
@@ -260,12 +255,19 @@ dashboardServer <- function(id) {
       })
       
       #Leaderboard####################
+      
       #for displaying leaderboard in leaderboard tab
       output$ldbrd <- renderUI({
         req(vals$cashOnHand,vals$playerid) # if vals$score is NULL, the controls will not be visible
         tagList(
-          tableOutput("leadboard2")
+          tableOutput("leadboard2"),
+          actionButton("publishscore", "Publish Your Score"),
+          tableOutput("leaderboard")
         )
+      })
+      #Publishes score to leaderboard
+      observeEvent(input$publishscore,{
+        publishScore(vals$playerid,vals$cashOnHand)
       })
     }
   )

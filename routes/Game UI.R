@@ -10,11 +10,32 @@ ingameUI <- function(session){
         bs4Card(
           background = "maroon",
           title = uiOutput(session$ns("currMonth")),
-          width = 12,
+          width = 6,
           height = NULL,
           descriptionBlock(
             header = uiOutput(session$ns("totalCash")), 
             text = "Total Cash",
+            rightBorder = FALSE,
+            marginBottom = FALSE
+          ),
+          descriptionBlock(
+            number = "Placeholder", 
+            numberColor = "secondary", 
+            numberIcon = icon("caret-down"),
+            header = "Placeholder", 
+            text = "Placeholder", 
+            rightBorder = FALSE,
+            marginBottom = FALSE
+          )
+        ),
+        bs4Card(
+          background = "lime",
+          title = "Title",
+          width = 6,
+          height = NULL,
+          descriptionBlock(
+            header = "Placeholder", 
+            text = "Placeholder",
             rightBorder = FALSE,
             marginBottom = FALSE
           ),
@@ -44,11 +65,10 @@ ingameUI <- function(session){
   ),
   fluidRow(
     box(
-      title = "Deposits and Withdrawals",
+      title = "Graphs",
       width = 4,
-      height = "100px",
-      "Welcome to the dashboard!"
-    ),
+      uiOutput(session$ns("graphs"))
+          ),
     box(
       title = "Loan Purchasing",
       width = 4,
@@ -59,11 +79,12 @@ ingameUI <- function(session){
       numericInput(session$ns("loan3"), label = "Loan 3 | Cost: $600  | Interest Rate: 10% | Default Rate: 50%", value = 0, min=0)
     ),
     box(
-      title = "Cash Balance",
+      title = "Completed Loans (reached maturity)",
       width = 4,
-      height = "100px",
-      plotOutput("cashGraph")  # Add the plot inside the box
-      
+      #height = "100px",
+      uiOutput(session$ns("loanCompletedMaturity")),
+      uiOutput(session$ns("loanCompletedDefault")),
+      uiOutput(session$ns("loanCompletedLiquidated"))
     ),
     box(
       title = "State of each inventory",
@@ -89,7 +110,7 @@ endgameUI <-function(session){
   )
 }
 endgameServer <- function(input, output, session, vals){
-  
+
   output$ingame <- renderUI({
     #check if the player is logged in
     if (is.null(vals$playername))
@@ -105,6 +126,7 @@ endgameServer <- function(input, output, session, vals){
   observeEvent(input$reset,{
     session$reload()
   })
+  
   #renders the final cash value as the score
   output$endCash <- renderUI(paste0("Final Cash Balance: $",vals$cashOnHand))
   

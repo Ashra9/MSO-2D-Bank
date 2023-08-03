@@ -156,6 +156,19 @@ getGameState <- function(current_month){
   result
 }
 
+getcompletedLoans <- function(defaulted, liquidated){
+  
+  #open the connection
+  conn <- getAWSConnection()
+  query <- sprintf("SELECT lc.month, lc.loanID, lt.loanValue FROM loanCompleted lc INNER JOIN loan l on l.loanID = lc.loanID INNER JOIN loanTerms lt ON lt.loanType = l.loanType WHERE defaulted = %s AND liquidated = %s", defaulted, liquidated)
+  result <- dbGetQuery(conn,query)
+  
+  dbDisconnect(conn)
+  
+  # return the dataframe
+  result
+}
+
 getloanTerms <- function() {
   #open the connection
   conn <- getAWSConnection()
@@ -186,14 +199,13 @@ getloanData <- function(current_month){
   result
 }
 
-getcashInventory <- function(month){
+getcashInventory <- function(){
   
   #open the connection
   conn <- getAWSConnection()
   #password could contain an SQL insertion attack
   #Create a template for the query with placeholders for playername and password
-  querytemplate <- "SELECT * FROM cashInventory ci WHERE `month` = ?id1"
-  query <- sqlInterpolate(conn, querytemplate,id1=month)
+  query <- "SELECT * FROM cashInventory"
   ##print(query)
   result <- dbGetQuery(conn,query)
   
@@ -442,6 +454,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
   # return loan liquidated
   if (defaulted==0 & liquidated == 1) {return (round(loanPayout, 2))}
 }
+
 #for logging in and register
 getPlayerID <- function(playername,password){
   
@@ -521,7 +534,6 @@ registerPlayer <- function(password){
   playername
 }
 
-
 ##### #####
 
 test <- function(){
@@ -538,7 +550,7 @@ test <- function(){
   loanDefault <- updateLoansRemoved(loanData, defaulted=1, liquidated=0, current_month=4)
   loanDefault
   
-  getcashInventory(3)
+  getcashInventory()
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)
   getloanTerms()
 }

@@ -34,6 +34,11 @@ loan_maturity <- function(input, output, vals) {
   print(paste("Loan Payout: ", vals$loanPayout))
 }
 
+loan_liquidated <- function(input, output, vals) {
+  loanID_left_in_query <- generate_loanID_left_in_query(vals$loanData)
+  updateLoansRemoved(vals$loanData, defaulted=0, liquidated=1, current_month=vals$current_month)
+}
+
 loan_default <- function(input, output, vals) {
   print("Loan Default")
   print(vals$loanData)

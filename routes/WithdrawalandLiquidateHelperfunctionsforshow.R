@@ -25,7 +25,6 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
                                       session){
   modalDialog(
     title = "Select loans to liquidate.",
-    htmlOutput("needed"),
     numericInput(session$ns("loantype1"), "Select number of $200 Loans to liquidate", value = 0, 
                  min = loan.type.1.min, max = loan.type.1.max),
     numericInput(session$ns("loantype2"), "Select number of $300 Loans to liquidate", value = 0, 
@@ -54,11 +53,11 @@ SelectLoans <- function(numberofeachtypeofloan,eachtypeofloan){
 }
 
 LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860, 
-                           loanData=data.frame(loanID = c(1,2,3,4,5), 
-                                               loanType=c(1,2,3,2,2), 
-                                               loanValue = c(200, 300, 600, 300, 300), 
-                                               durationToMaturity = c(3,1,2,2,3)), 
-                           loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7){
+                           loanData=data.frame(loanID = c(1,2,3,4), 
+                                               loanType=c(1,2,2,2), 
+                                               loanValue = c(200, 300, 300, 300), 
+                                               durationToMaturity = c(3,1,2,3)), 
+                           loansselected=SelectLoans(c(1,2),c(1,2)), percentage=0.7){
   
   # Keep track of loanValue of liquidated loans
   removed_loans_value = 0
@@ -67,7 +66,8 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
     loan_type <- loansselected$loan.type[i]
     num_rows_to_remove <- loansselected$no.of.each.type.of.loan[i]
     
-    # Filter the rows in loanData with loanType equal to loan_type
+    print(loanData)
+    # Filter the rows in loanData with loanValue equal to loan_type
     filtered_rows <- loanData[loanData$loanType == loan_type, ]
     
     if (num_rows_to_remove != 0 & nrow(filtered_rows) >= num_rows_to_remove) {
@@ -76,7 +76,6 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
       
       # Find the rows to remove
       rows_to_remove <- sorted_rows[1:num_rows_to_remove, ]
-      print("rows to remove:")
       print(rows_to_remove) #for debugging
       
       # Calculate the loanValue of the loans that will be removed
@@ -101,6 +100,16 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
 }
 
 getMaxLoan <- function(loanData){
+  # loan_type_counts <- loanData %>%group_by(loanType) %>% tally()
+  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 1),2])){
+  #   loan_type_counts[which(loan_type_counts$loanType == 1),2] <- 0
+  # }
+  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 2),2])){
+  #   loan_type_counts[which(loan_type_counts$loanType == 2),2] <- 0
+  # }
+  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 3),2])){
+  #   loan_type_counts[which(loan_type_counts$loanType == 3),2] <- 0
+  # }
   # Group loanData by loanValue and count occurrences
   loanData_counts <- loanData %>%
     group_by(loanValue) %>%
@@ -146,11 +155,11 @@ ui <- fluidPage(
 #### Server Section
 #the following will be in the server function after some observe event of a customer withdrawing:
 server <- function(input, output, session){
-  vals <- reactiveValues(cashOnHand = 1400, 
-                         loanData = data.frame(loanID = c(1,2,3,4,5), 
-                                               loanType=c(1,2,3,2,2), 
-                                               loanValue = c(200, 300, 600, 300, 300), 
-                                               durationToMaturity = c(3,1,2,2,3)),
+  vals <- reactiveValues(cashOnHand = 18.63, 
+                         loanData = data.frame(loanID = c(1,2), 
+                                               loanType=c(1,3), 
+                                               loanValue = c(200,600), 
+                                               durationToMaturity = c(1,6)),
                          numberofeachtypeofloan=NULL,
                          percentage=0.7)
 
@@ -160,7 +169,7 @@ server <- function(input, output, session){
     print("This is the current loan data:")
     print(vals$loanData)
     
-    withdrawals <- 1860 #as test
+    withdrawals <- 116.4 #as test
     #Note: when testing below chunk outside of app, comment out all the showModals and shinyAlerts.
     if(withdrawals <= vals$cashOnHand){
       vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*withdrawals)
@@ -185,7 +194,7 @@ server <- function(input, output, session){
                                             loan.type.3.min=0, loan.type.3.max=max_number_list$three,
                                             notenough = FALSE,
                                             session))
-        
+      
         observeEvent(input$loanliquidatesubmission, {
           removeModal()
           vals$numberofeachtypeofloan <- c(input$loantype1, input$loantype2, input$loantype3)
@@ -194,10 +203,10 @@ server <- function(input, output, session){
           loansselected <- SelectLoans(vals$numberofeachtypeofloan, eachtypeofloan) #now assuming both are vectors of numbers
           print('loans selected:')
           print(loansselected) #for debugging
+          print("going to set each type of loan selected to null")
           vals$numberofeachtypeofloan <- NULL
           
           result_list <- LiquidateLoans(vals$cashOnHand, withdrawals, vals$loanData, loansselected, vals$percentage)
-          print(result_list)
           #print(percentage*result_list$removed_loans_value)
           if(vals$percentage*result_list$removed_loans_value+vals$cashOnHand < withdrawals){
             # print("Did not meet withdrawal demand, liquidate more loans")
@@ -213,8 +222,10 @@ server <- function(input, output, session){
             vals$loanData <- result_list$resultloanData
             vals$cashOnHand <- result_list$resultcashbalance
           }
-        })  
-      }
+        })
+      
+        
+     }
     }
 
     
@@ -230,4 +241,3 @@ server <- function(input, output, session){
 }      
 
 shinyApp(ui, server)
-
