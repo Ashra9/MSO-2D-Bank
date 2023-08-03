@@ -1,47 +1,39 @@
 ingameUI <- function(session){
   fluidPage(
-  gridPanel(
-    template = "sidebar-right",
-    box(
-      title = "Current Stats",
-      width = 12,
-      
-      fluidRow(
+    fluidRow(
         bs4Card(
           background = "maroon",
           title = uiOutput(session$ns("currMonth")),
-          width = 12,
+          width = 9,
           height = NULL,
-          descriptionBlock(
-            header = uiOutput(session$ns("totalCash")), 
-            text = "Total Cash",
-            rightBorder = FALSE,
-            marginBottom = FALSE
-          ),
-          descriptionBlock(
-            number = "Placeholder", 
-            numberColor = "secondary", 
-            numberIcon = icon("caret-down"),
-            header = "Placeholder", 
-            text = "Placeholder", 
-            rightBorder = FALSE,
-            marginBottom = FALSE
+          fluidRow(
+            bs4InfoBox(
+              title = "Total Cash", 
+              value = uiOutput(session$ns("totalCash")),
+              color = "info"
+            ),
+            box(
+              title = "State of each inventory",
+              width = 12,
+              uiOutput(session$ns("progressTrackers"))
+            )
           )
-        )
-      )
+        ),
+      column(width = 3,
+             actionButton(
+               width = "100%",
+               session$ns("nextmonth"), 
+               "Next Month",
+               status = "primary",
+               outline = FALSE,
+               flat = TRUE,
+               size = "lg",
+               class = "nxtbtn"
+             ),
+             tags$style(".nxtbtn {height: 100px;}")
+             )
+      
     ),
-    
-    actionButton(
-      session$ns("nextmonth"), 
-      "Next Month",
-      status = "primary",
-      outline = FALSE,
-      flat = TRUE,
-      size = "lg",
-      class = "nxtbtn"
-    ),
-    tags$style(".nxtbtn {height: 100px;}")
-  ),
   fluidRow(
     box(
       title = "Graphs",
@@ -64,12 +56,6 @@ ingameUI <- function(session){
       uiOutput(session$ns("loanCompletedMaturity")),
       uiOutput(session$ns("loanCompletedDefault")),
       uiOutput(session$ns("loanCompletedLiquidated"))
-    ),
-    box(
-      title = "State of each inventory",
-      width = 12,
-      
-      uiOutput(session$ns("progressTrackers"))
     )
   )
   )
