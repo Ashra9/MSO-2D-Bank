@@ -147,14 +147,7 @@ dashboardServer <- function(id) {
                             percentage=0.7,
                             endgame="F")
 
-      # when registering
-      observeEvent(input$registerButton,{
-        showModal(passwordModal())
-      })
-      
-      #check if the login is successfull, then go to tutorial for instructions
-      # login_checker(input,output, session)
-      
+
       #after reading instructions and clicking the play button
       observeEvent(input$startGame,{
         updateTabItems(session, "sidebar", selected = "game")
