@@ -111,7 +111,31 @@ next_button <- function(input,output,session, vals){
                                             session))
         
         
-        observeEvent(input$loanliquidatesubmission, {
+        
+      }
+    }
+    
+    print("This is the current loan data:")
+    print(vals$loanData)
+    print("This is the current cash balance:")
+    print(vals$cashOnHand)
+    
+    
+    
+    # Record updates in cash inventory
+    vals$cashOnHand <- vals$cashOnHand
+    print(paste("Cash on Hand:", vals$cashOnHand))
+    updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
+    vals$cashInventory <- getcashInventory()
+    print("Cash Inventory")
+    print(vals$cashInventory)
+    
+    # Update loans that were liquidated
+    loan_liquidated(input, output, vals)
+    
+    })
+
+    observeEvent(input$loanliquidatesubmission, {
           removeModal()
           vals$numberofeachtypeofloan <- c(input$loantype1, input$loantype2, input$loantype3)
           eachtypeofloan <- c(1,2,3)
@@ -147,15 +171,8 @@ next_button <- function(input,output,session, vals){
               )
             ))
           }
-        })
-      }
-    }
-    
-    print("This is the current loan data:")
-    print(vals$loanData)
-    print("This is the current cash balance:")
-    print(vals$cashOnHand)
-    
+    })
+  
     output$needed <- renderUI({
       line1 <- "Cash balance:"
       line2 <- "Amount still needed:"
@@ -165,20 +182,9 @@ next_button <- function(input,output,session, vals){
                  line2, withdrawals - vals$cashOnHand, "<br>",
                  line3,
                  "</p>"))
-    })
-    
-    # Record updates in cash inventory
-    vals$cashOnHand <- vals$cashOnHand
-    print(paste("Cash on Hand:", vals$cashOnHand))
-    updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
-    vals$cashInventory <- getcashInventory()
-    print("Cash Inventory")
-    print(vals$cashInventory)
-    
-    # Update loans that were liquidated
-    loan_liquidated(input, output, vals)
-    
-    })
+                })
+
+  
 }
 
 after_withdrawal <- function(input, output, session, vals) {
