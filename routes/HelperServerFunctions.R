@@ -152,6 +152,7 @@ next_button <- function(input,output,session, vals){
             # print("Did not meet withdrawal demand, liquidate more loans")
             
             # showModal(...) #window to show the loans selected are not enough to cover the withdrawal
+            max_number_list <- getMaxLoan(vals$loanData)
             showModal(selectLoansLiquidateModal(loan.type.1.min=0, loan.type.1.max=max_number_list$one, 
                                                 loan.type.2.min=0, loan.type.2.max=max_number_list$two, 
                                                 loan.type.3.min=0, loan.type.3.max=max_number_list$three,
