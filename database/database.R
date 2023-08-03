@@ -366,7 +366,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
       query <- paste(query, "(", 10^10, ")")    
     }
     
-    #print(query) #for debug
+    print(query) #for debug
     result <- dbGetQuery(conn,query)
     
     dbDisconnect(conn)
@@ -392,7 +392,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
       conn <- getAWSConnection()
       
       query <- sprintf("INSERT INTO loanCompleted (loanID, defaulted, liquidated, month) VALUES (%s, %s, %s, %s)", loanID, defaulted, liquidated, current_month)
-      #print(query) #for debug
+      print(query) #for debug
       success <- FALSE
       iter <- 0
       MAXITER <- 5
@@ -425,7 +425,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
       query <- "DELETE FROM loanInventory WHERE loanID NOT IN"
       query <- paste(query, "(", 10^10, ")")    
     }
-    #print(query) #for debug
+    print(query) #for debug
     success <- FALSE
     iter <- 0
     MAXITER <- 5
@@ -541,7 +541,7 @@ test <- function(){
   getGameState(1)
   
   # start of the month data, prepare duration to maturity for calculations as well
-  loanData <- getloanData(current_month=4)
+  loanData <- getloanData(current_month=3)
   # after next button is clicked, purchase loans and add to database
   purchase_list = list(type=c(1,2,3), num=c(1,2,1))
   updateLoansPurchased(purchase_list, current_month=3)
@@ -549,6 +549,8 @@ test <- function(){
   loanPayout
   loanDefault <- updateLoansRemoved(loanData, defaulted=1, liquidated=0, current_month=4)
   loanDefault
+  
+  updateLoansRemoved(loanData, defaulted=0, liquidated=1, current_month=3)
   
   getcashInventory()
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)

@@ -120,8 +120,6 @@ next_button <- function(input,output,session, vals){
     print("This is the current cash balance:")
     print(vals$cashOnHand)
     
-    
-    
     # Record updates in cash inventory
     vals$cashOnHand <- vals$cashOnHand
     print(paste("Cash on Hand:", vals$cashOnHand))
@@ -129,9 +127,6 @@ next_button <- function(input,output,session, vals){
     vals$cashInventory <- getcashInventory()
     print("Cash Inventory")
     print(vals$cashInventory)
-    
-    # Update loans that were liquidated
-    loan_liquidated(input, output, vals)
     
     })
 
@@ -161,6 +156,8 @@ next_button <- function(input,output,session, vals){
           } else {
             print(result_list) #for debugging
             vals$loanData <- result_list$resultloanData
+            # Update loans that were liquidated
+            loan_liquidated(input, output, vals)
             vals$cashOnHand <- result_list$resultcashbalance
             showModal(modalDialog(
               title = sprintf("End of month %s", vals$current_month),
