@@ -177,7 +177,7 @@ next_button <- function(input,output,session, vals){
       line3 <- "Note that only 70% of the value of liquidated loans will be added to your cash balance."
       HTML(paste("<p>", 
                  line1, vals$cashOnHand,"<br>", 
-                 line2, withdrawals - vals$cashOnHand, "<br>",
+                 line2, vals$withdrawals - vals$cashOnHand, "<br>",
                  line3,
                  "</p>"))
                 })
