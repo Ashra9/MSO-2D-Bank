@@ -25,6 +25,7 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
                                       session){
   modalDialog(
     title = "Select loans to liquidate.",
+    htmlOutput("needed"),
     numericInput(session$ns("loantype1"), "Select number of $200 Loans to liquidate", value = 0, 
                  min = loan.type.1.min, max = loan.type.1.max),
     numericInput(session$ns("loantype2"), "Select number of $300 Loans to liquidate", value = 0, 
