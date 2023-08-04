@@ -34,7 +34,7 @@ my_theme <- create_theme(
     submenu_hover_color = "#FFF"
   ),
   bs4dash_status(
-    primary = "#5E81AC", danger = "#FFA500", light = "#272c30"
+    primary = "lightblue", danger = "lightblue", light = "#272c30"
   ),
   bs4dash_font(
     weight_bold = 900
