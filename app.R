@@ -81,6 +81,9 @@ dashboardUI <- function(id) {
             bs4TabItems(
               bs4TabItem(
                 tabName = "game",
+                tags$head(tags$style(HTML("
+                @import url('https://fonts.googleapis.com/css?family=Titillium%20Web');
+                                          * {font-family: 'Titillium Web'};"))),
                 uiOutput(ns("ingame"))
               ),
               bs4TabItem(
