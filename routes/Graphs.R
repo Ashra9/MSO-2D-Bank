@@ -14,6 +14,10 @@ plotCashGraph <- function(input, output, vals){
     }
     else {
       cashInventory <- vals$cashInventory
+      if (nrow(subset(cashInventory, month == vals$current_month))==0) {
+        cashInventory <- rbind(cashInventory, data.frame(deposits=c(0), withdrawals=c(0), loanPayout=c(0), cashOnHand=c(0), month=c(vals$current_month)))
+      }
+      
       cashInventory$cumulativeDeposits <- cumsum(cashInventory$deposits)
       cashInventory$cumulativeWithdrawals <- cumsum(cashInventory$withdrawals)
       cashInventory$cumulativeLoanPayout <- cumsum(cashInventory$loanPayout)
@@ -34,8 +38,8 @@ plotCashGraph <- function(input, output, vals){
       
       cumLoansPurchased <- getCumLoanPurchased()
       print(cumLoansPurchased)
-      if (nrow(subset(cumLoansPurchased, month == vals$current_month-1))==0) {
-        cumLoansPurchased <- rbind(cumLoansPurchased, data.frame(month=c(vals$current_month-1),loanID=c(0), loanValue=c(0)))
+      if (nrow(subset(cumLoansPurchased, month == vals$current_month))==0) {
+        cumLoansPurchased <- rbind(cumLoansPurchased, data.frame(month=c(vals$current_month),loanID=c(0), loanValue=c(0)))
       }
       
       cum_value_loans_purchased <- cumLoansPurchased %>% group_by(month) %>% 
@@ -113,3 +117,4 @@ ggplot(data=cashInventory) +
   geom_ribbon(aes(x = month, y = cum_value_loans_purchased, ymin = 0, ymax = cum_value_loans_purchased, fill = "Loan Value"), data = df_cum_value_loans_purchased, alpha=0.8) +
   labs(x = "Month", y = "Cumulative value") +
   scale_fill_manual(name = "Legends", values = c("Deposits" = "blue", "Withdrawals" = "red", "Loan Value" = "green", "Loan Payout" = "yellow"))
+
