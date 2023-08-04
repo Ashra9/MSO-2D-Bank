@@ -91,12 +91,14 @@ next_button <- function(input,output,session, vals){
           ),
           sprintf("End of month %s", vals$current_month)
         ),
-        paste("Withdrawal amount:", vals$withdrawals),
-        "Congratulations! Cash balance is enough to cover withdrawals!",
-        easyClose = FALSE,
-        footer = list(
-          actionButton(ns("endMonth"), "OK")
-        )
+        HTML(
+          paste("Withdrawal amount:", vals$withdrawals, "<br>"),
+          "Congratulations! Cash balance is enough to cover withdrawals!"
+          ),
+          easyClose = FALSE,
+          footer = list(
+            actionButton(ns("endMonth"), "OK")
+            )
       ))
     }else{
       if(vals$percentage*sum(vals$loanData$loanValue)+ vals$cashOnHand < vals$withdrawals){
@@ -236,16 +238,21 @@ after_withdrawal <- function(input, output, session, vals) {
     print(paste("Start of month cash on hand::", vals$cashOnHand))
     
     showModal(modalDialog(
-      title = div(
-        tags$div(
-          style = "display: inline-block; margin-right: 10px;",
-          tags$img(src = "sprites/stonks-up-stongs.gif", height = "50px", width = "50px", alt = "Monopoly man")
-        ),
-        sprintf("Start of month %s", vals$current_month)      ),
-      paste("Deposit amount:", vals$deposits, "|"), 
-      paste("Loan payout amount:", vals$loanPayout, "|"),
-      paste("Cash on hand: ", vals$cashOnHand, "|"),
-      paste("Loan default amount:", loanDefault),
+      title = sprintf("Start of month %s", vals$current_month),
+      HTML(
+        sprintf(
+          '<div style="display: flex; align-items: center;">
+         <img src="sprites/stonks-up-stongs.gif" height="100px" width="100px" alt="Monopoly man" style="margin-right: 10px;">
+         <div>
+           <p style="margin: 0;">Deposit amount: <b>%s</b></p>
+           <p style="margin: 0;">Loan payout amount: <b>%s</b></p>
+           <p style="margin: 0;">Cash on hand: <b>%s</b></p>
+           <p style="margin: 0;">Loan default amount: <b>%s</b></p>
+         </div>
+      </div>',
+          vals$deposits, vals$loanPayout, vals$cashOnHand, loanDefault
+        )
+      ),
       easyClose = FALSE
     ))
     
