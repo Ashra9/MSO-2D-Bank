@@ -83,23 +83,82 @@ next_button <- function(input,output,session, vals){
     if(vals$withdrawals <= vals$cashOnHand){
       vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*vals$withdrawals)
       print("No liquidation needed")
-      showModal(modalDialog(
-        title = div(
-          tags$div(
-            style = "display: inline-block; margin-right: 10px;",
-            tags$img(src = "sprites/money-with-wings-joypixels.gif", height = "50px", width = "50px", alt = "Monopoly man")
+      
+      ##### Show different modal for Chinese New Yearv #####
+      if (vals$current_month == 2 | vals$current_month == 14 | vals$current_month == 26) {
+        showModal(modalDialog(
+          title = div(
+            tags$div(
+              style = "display: inline-block; margin-right: 10px;",
+              tags$img(src = "sprites/money-with-wings-joypixels.gif", height = "50px", width = "50px", alt = "Monopoly man")
+            ),
+            sprintf("End of month %s", vals$current_month)
           ),
-          sprintf("End of month %s", vals$current_month)
-        ),
-        HTML(
-          paste("Withdrawal amount:", vals$withdrawals, "<br>"),
-          "Congratulations! Cash balance is enough to cover withdrawals!"
+          HTML(
+            sprintf(
+              '<div style="display: flex; align-items: center;">
+                 <img src="sprites/chinese-new-year2019-celebrate.gif" height="200px" width="200px" alt="CNY" style="margin-right: 10px;">
+                 <div>
+                   <p style="margin: 0;">Withdrawal amount: <b>%s</b><br><br>
+                   Congratulations and <b>Happy Chinese New Year</b>! Despite higher withdrawal demand, cash balance is enough to cover withdrawals!</p>
+                 </div>
+              </div>',
+              vals$withdrawals
+            )
           ),
           easyClose = FALSE,
           footer = list(
             actionButton(ns("endMonth"), "OK")
+          )
+        ))
+      }
+      else if (vals$current_month == 12 | vals$current_month == 24 | vals$current_month == 36) {
+        showModal(modalDialog(
+          title = div(
+            tags$div(
+              style = "display: inline-block; margin-right: 10px;",
+              tags$img(src = "sprites/money-with-wings-joypixels.gif", height = "50px", width = "50px", alt = "Monopoly man")
+            ),
+            sprintf("End of month %s", vals$current_month)
+          ),
+          HTML(
+            sprintf(
+              '<div style="display: flex; align-items: center;">
+                 <img src="sprites/sports-sportsmanias.gif" height="200px" width="200px" alt="CNY" style="margin-right: 10px;">
+                 <div>
+                   <p style="margin: 0;">Withdrawal amount: <b>%s</b><br><br>
+                   Congratulations and <b>Happy Christmas</b>! Despite higher withdrawal demand, cash balance is enough to cover withdrawals!</p>
+                 </div>
+              </div>',
+              vals$withdrawals
             )
-      ))
+          ),
+          easyClose = FALSE,
+          footer = list(
+            actionButton(ns("endMonth"), "OK")
+          )
+        ))
+      }
+      else {
+        showModal(modalDialog(
+          title = div(
+            tags$div(
+              style = "display: inline-block; margin-right: 10px;",
+              tags$img(src = "sprites/money-with-wings-joypixels.gif", height = "50px", width = "50px", alt = "Monopoly man")
+            ),
+            sprintf("End of month %s", vals$current_month)
+          ),
+          HTML(
+            paste("Withdrawal amount:", "<b>", vals$withdrawals, "</b>", "<br>", "<br>"),
+            "Congratulations! Cash balance is enough to cover withdrawals!"
+          ),
+          easyClose = FALSE,
+          footer = list(
+            actionButton(ns("endMonth"), "OK")
+          )
+        ))
+      }
+      
     }else{
       if(vals$percentage*sum(vals$loanData$loanValue)+ vals$cashOnHand < vals$withdrawals){
         # print("Game has ended due to inability to meet withdrawal demand")
@@ -212,7 +271,7 @@ after_withdrawal <- function(input, output, session, vals) {
     vals$current_month <- vals$current_month + 1
     
     #update the endgame state to T
-    if (vals$current_month > 12){
+    if (vals$current_month > 36){
       vals$endgame <- "T"
     }
     # Get new loan data
@@ -237,24 +296,51 @@ after_withdrawal <- function(input, output, session, vals) {
     vals$cashOnHand <- vals$cashOnHand + vals$deposits
     print(paste("Start of month cash on hand::", vals$cashOnHand))
     
-    showModal(modalDialog(
-      title = sprintf("Start of month %s", vals$current_month),
-      HTML(
-        sprintf(
-          '<div style="display: flex; align-items: center;">
-         <img src="sprites/stonks-up-stongs.gif" height="100px" width="100px" alt="Monopoly man" style="margin-right: 10px;">
+    if (vals$current_month == 3 | vals$current_month == 15 | vals$current_month == 27) {
+      showModal(modalDialog(
+        title = sprintf("Start of month %s", vals$current_month),
+        HTML(
+          sprintf(
+            '<p>Hooray! Deposits have increased as account holders cash in their red packets from Chinese New Year!</p>
+          <div style="display: flex; align-items: center;">
+         <img src="sprites/niu-ox.gif" height="100px" width="100px" alt="stonks man" style="margin-right: 10px;">
          <div>
            <p style="margin: 0;">Deposit amount: <b>%s</b></p>
            <p style="margin: 0;">Loan payout amount: <b>%s</b></p>
            <p style="margin: 0;">Cash on hand: <b>%s</b></p>
            <p style="margin: 0;">Loan default amount: <b>%s</b></p>
+           <br>
          </div>
       </div>',
-          vals$deposits, vals$loanPayout, vals$cashOnHand, loanDefault
-        )
-      ),
-      easyClose = FALSE
-    ))
+            vals$deposits, vals$loanPayout, vals$cashOnHand, loanDefault
+          )
+        ),
+        easyClose = FALSE
+      ))
+    } else {
+      showModal(modalDialog(
+        title = sprintf("Start of month %s", vals$current_month),
+        HTML(
+          sprintf(
+            '<p>Start of a new month! Time to purchase more loans!</p>
+
+            <div style="display: flex; align-items: center;">
+         <img src="sprites/stonks-up-stongs.gif" height="100px" width="100px" alt="stonks man" style="margin-right: 10px;">
+         <div>
+           <p style="margin: 0;">Deposit amount: <b>%s</b></p>
+           <p style="margin: 0;">Loan payout amount: <b>%s</b></p>
+           <p style="margin: 0;">Cash on hand: <b>%s</b></p>
+           <p style="margin: 0;">Loan default amount: <b>%s</b></p>
+           <br>
+         </div>
+      </div>',
+            vals$deposits, vals$loanPayout, vals$cashOnHand, loanDefault
+          )
+        ),
+        easyClose = FALSE
+      ))
+    }
+    
     
     ### Update completed loans
     # Update loan maturity
