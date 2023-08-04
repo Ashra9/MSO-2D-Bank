@@ -173,12 +173,16 @@ next_button <- function(input,output,session, vals){
   
     output$needed <- renderUI({
       line1 <- "Cash balance:"
-      line2 <- "Amount still needed:"
+      line2 <- "Amount still needed to satisfy withdrawals:"
       line3 <- "Note that only 70% of the value of liquidated loans will be added to your cash balance."
-      HTML(paste("<p>", 
+      max_number_list <- getMaxLoan(vals$loanData)
+      HTML(paste("<p style='font-size: 14px;'>", 
                  line1, vals$cashOnHand,"<br>", 
                  line2, vals$withdrawals - vals$cashOnHand, "<br>",
-                 line3,
+                 line3, "<br>", "<br>",
+                 "Number of $200 loans you still have:", max_number_list$one, "<br>",
+                 "Number of $300 loans you still have:", max_number_list$two, "<br>",
+                 "Number of $600 loans you still have:", max_number_list$three,
                  "</p>"))
                 })
 
