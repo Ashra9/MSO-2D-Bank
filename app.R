@@ -8,9 +8,10 @@ source("routes/Leaderboard Helper S&UI.R")
 source("routes/Game UI.R")
 source("routes/Graphs.R")
 
-pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL", "imola")
+pkgnames <- c("tidyverse","shiny", "shinyjs","DBI","jsonlite","bs4Dash", "plotly", "fresh", "RMySQL")
 loadPkgs(pkgnames)
 #Define your custom theme
+
 my_theme <- create_theme(
   bs4dash_vars(
     navbar_light_color = "#bec5cb",
@@ -37,7 +38,7 @@ my_theme <- create_theme(
     primary = "lightblue", danger = "lightblue", light = "#272c30"
   ),
   bs4dash_font(
-    weight_bold = 900
+    weight_bold = 900,
   )
 )
 

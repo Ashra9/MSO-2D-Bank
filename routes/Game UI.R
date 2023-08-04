@@ -22,7 +22,7 @@ ingameUI <- function(session){
             ),
             bs4ValueBox(
               width = 12,
-              color = "secondary",
+              color = "info",
               subtitle = "",
               footer = "Loans Information",
               value = div(tags$b("Loan 1"), " Cost: $200 | Interest Rate: 10% | Default Rate: 10%", tags$br(),
@@ -59,7 +59,7 @@ ingameUI <- function(session){
           )
         ),
       column(width = 4,
-             fluidRow(
+             
              actionButton(
                width = "100%",
                session$ns("nextmonth"), 
@@ -70,7 +70,11 @@ ingameUI <- function(session){
                size = "lg",
                class = "nxtbtn"
              ),
-             tags$style(".nxtbtn {height: 100px;}"),
+             tags$style(".nxtbtn {height: 100px; padding-bottom: 10px;}"),
+             div(
+               style = "color: seagreen;",
+               "Go to Next Month!"
+                 ),
              box(
                title = div(
                  tags$div(
@@ -84,7 +88,7 @@ ingameUI <- function(session){
                uiOutput(session$ns("loanCompletedDefault")),
                uiOutput(session$ns("loanCompletedLiquidated"))
              )
-             )
+             
              )
       
     ),
