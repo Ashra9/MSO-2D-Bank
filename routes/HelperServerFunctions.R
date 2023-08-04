@@ -84,7 +84,13 @@ next_button <- function(input,output,session, vals){
       vals$cashOnHand <- updateCashBalance(vals$cashOnHand, -1*vals$withdrawals)
       print("No liquidation needed")
       showModal(modalDialog(
-        title = sprintf("End of month %s", vals$current_month),
+        title = div(
+          tags$div(
+            style = "display: inline-block; margin-right: 10px;",
+            tags$img(src = "sprites/money-with-wings-joypixels.gif", height = "50px", width = "50px", alt = "Monopoly man")
+          ),
+          sprintf("End of month %s", vals$current_month)
+        ),
         paste("Withdrawal amount:", vals$withdrawals),
         "Congratulations! Cash balance is enough to cover withdrawals!",
         easyClose = FALSE,
@@ -160,7 +166,13 @@ next_button <- function(input,output,session, vals){
             loan_liquidated(input, output, vals)
             vals$cashOnHand <- result_list$resultcashbalance
             showModal(modalDialog(
-              title = sprintf("End of month %s", vals$current_month),
+              title = div(
+                tags$div(
+                  style = "display: inline-block; margin-right: 10px;",
+                  tags$img(src = "sprites/money-with-wings-joypixels.gif", height = "50px", width = "50px", alt = "Monopoly man")
+                ),
+                sprintf("End of month %s", vals$current_month)
+              ),
               paste("Withdrawal amount:", vals$withdrawals),
               "Congratulations! You have were able to meet withdrawal demand by prematurely liquidating some loans in your inventory!",
               easyClose = FALSE,
@@ -224,7 +236,12 @@ after_withdrawal <- function(input, output, session, vals) {
     print(paste("Start of month cash on hand::", vals$cashOnHand))
     
     showModal(modalDialog(
-      title = sprintf("Start of month %s", vals$current_month),
+      title = div(
+        tags$div(
+          style = "display: inline-block; margin-right: 10px;",
+          tags$img(src = "sprites/stonks-up-stongs.gif", height = "50px", width = "50px", alt = "Monopoly man")
+        ),
+        sprintf("Start of month %s", vals$current_month)      ),
       paste("Deposit amount:", vals$deposits, "|"), 
       paste("Loan payout amount:", vals$loanPayout, "|"),
       paste("Cash on hand: ", vals$cashOnHand, "|"),
