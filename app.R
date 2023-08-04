@@ -119,7 +119,7 @@ dashboardUI <- function(id) {
               div(
                 class = "tab-content",  # Optional class for styling
                 img(src = "Operational Concept.png", width = "100%", height = "100%"),
-                actionButton(ns("startGame"), "Play",status = "success", size = "lg" )
+                actionButton(ns("startGame"), "Play",status = "warning", size = "lg" )
               )
             ),
             bs4TabItem(

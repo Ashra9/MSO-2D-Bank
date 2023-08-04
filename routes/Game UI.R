@@ -70,7 +70,7 @@ ingameUI <- function(session){
                size = "lg",
                class = "nxtbtn"
              ),
-             tags$style(".nxtbtn {height: 100px; padding-bottom: 10px;}"),
+             tags$style(".nxtbtn {height: 100px;}"),
              div(
                style = "color: seagreen;",
                "Go to Next Month!"
@@ -116,7 +116,12 @@ endgameUI <-function(session){
                h4("You have completed the game."),
                uiOutput(session$ns("endCash")),
                actionButton(session$ns("publishscore"), "Publish Your Score"),
-               actionButton(session$ns("reset"), "Play Again")
+               actionButton(session$ns("reset"), "Play Again"),
+               div(
+                 style = "color: seagreen;",
+                 "Graphs below!"
+               ),
+               uiOutput(session$ns("graphs"))
         )
      )
   )
