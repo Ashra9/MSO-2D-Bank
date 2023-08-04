@@ -14,7 +14,7 @@ ingameUI <- function(session){
                   style = "display: inline-block; margin-right: 10px;",
                   tags$img(src = "sprites/money.png", height = "50px", width = "50px", alt = "Monopoly man")
                 ),
-                "Total Cash"
+                "Cash balance"
               ),
               width = 12,
               uiOutput(session$ns("totalCash")),

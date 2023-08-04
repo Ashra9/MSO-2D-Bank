@@ -203,7 +203,7 @@ dashboardServer <- function(id) {
       output$totalCash <- renderUI(vals$cashOnHand)
       
       #for updating the month no.
-      output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month))
+      output$currMonth <- renderUI(paste0("Current Month: ", vals$current_month, "/36"))
       
       # plot graph
       plotCashGraph(input, output, vals)

@@ -127,7 +127,7 @@ next_button <- function(input,output,session, vals){
                  <img src="sprites/sports-sportsmanias.gif" height="200px" width="200px" alt="CNY" style="margin-right: 10px;">
                  <div>
                    <p style="margin: 0;">Withdrawal amount: <b>%s</b><br><br>
-                   Congratulations and <b>Happy Christmas</b>! Despite higher withdrawal demand, cash balance is enough to cover withdrawals!</p>
+                   Congratulations and <b>Merry Christmas</b>! Despite higher withdrawal demand, cash balance is enough to cover withdrawals!</p>
                  </div>
               </div>',
               vals$withdrawals
@@ -189,7 +189,7 @@ next_button <- function(input,output,session, vals){
     
     # Record updates in cash inventory
     vals$cashOnHand <- vals$cashOnHand
-    print(paste("Cash on Hand:", vals$cashOnHand))
+    print(paste("Cash balance:", vals$cashOnHand))
     updateCashInventory(month=vals$current_month, deposits=vals$deposits, withdrawals=vals$withdrawals, loanPayout=vals$loanPayout,cashOnHand=vals$cashOnHand)
     vals$cashInventory <- getcashInventory()
     print("Cash Inventory")
@@ -294,7 +294,7 @@ after_withdrawal <- function(input, output, session, vals) {
     print(paste("Deposits amount:", vals$deposits))
     
     vals$cashOnHand <- vals$cashOnHand + vals$deposits
-    print(paste("Start of month cash on hand::", vals$cashOnHand))
+    print(paste("Start of month Cash balance:", vals$cashOnHand))
     
     if (vals$current_month == 3 | vals$current_month == 15 | vals$current_month == 27) {
       showModal(modalDialog(
@@ -307,7 +307,7 @@ after_withdrawal <- function(input, output, session, vals) {
          <div>
            <p style="margin: 0;">Deposit amount: <b>%s</b></p>
            <p style="margin: 0;">Loan payout amount: <b>%s</b></p>
-           <p style="margin: 0;">Cash on hand: <b>%s</b></p>
+           <p style="margin: 0;">Cash balance: <b>%s</b></p>
            <p style="margin: 0;">Loan default amount: <b>%s</b></p>
            <br>
          </div>
@@ -329,7 +329,7 @@ after_withdrawal <- function(input, output, session, vals) {
          <div>
            <p style="margin: 0;">Deposit amount: <b>%s</b></p>
            <p style="margin: 0;">Loan payout amount: <b>%s</b></p>
-           <p style="margin: 0;">Cash on hand: <b>%s</b></p>
+           <p style="margin: 0;">Cash balance: <b>%s</b></p>
            <p style="margin: 0;">Loan default amount: <b>%s</b></p>
            <br>
          </div>
