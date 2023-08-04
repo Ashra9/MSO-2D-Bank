@@ -3,21 +3,6 @@
 source("usePackages.R")
 loadPkgs(c("sqldf","shiny","shinyalert","dplyr"))
 
-
-# withdrawals <- 1860 #for testing
-# cashbalance <- 1400 #for testing
-# loanData <- data.frame(loanID = c(1,2,3,4,5), loanType=c(1,2,3,2,2), loanValue = c(200, 300, 600, 300, 300), durationToMaturity = c(3,1,2,2,3)) #for testing
-# # loanData <- getloanData()
-# 
-# #loanValue is how much the loan is initially worth
-# #durationToMaturity is the no. of months the loan has left before it matures
-# numberofeachtypeofloan <- c(1,2,0) #for testing
-# eachtypeofloan <- c(1,2,3) #for testing
-# 
-# percentage <- 0.7
-
-
-
 #### Helper Function Section
 selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2, 
                                       loan.type.2.min=0, loan.type.2.max=2, 
