@@ -200,12 +200,6 @@ dashboardServer <- function(id) {
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
                             endgame="F")
-      
-      runjs("
-      $('#mycarousel').carousel({
-      interval: false,
-      });
-      ")
 
 
       #after reading instructions and clicking the play button
@@ -220,20 +214,6 @@ dashboardServer <- function(id) {
       # Check observation of next month
       next_button(input,output,session, vals)
       after_withdrawal(input, output, session, vals)
-      
-      #select loans to liquidate modal
-      #selectLoansLiquidateModal()
-      
-      #liquidate loans event
-      #LiquidateLoans(cashbalance=1400, withdrawalamount=1860, 
-      #                     loanData=data.frame(loanID = c(1,2,3,4,5), 
-      #                                         loanType=c(1,2,3,2,2), 
-      #                                         loanValue = c(200, 300, 600, 300, 300), 
-      #                                         durationToMaturity = c(3,1,2,2,3)), 
-      #                     loansselected=SelectLoans(c(1,2,0),c(1,2,3)), percentage=0.7)
-
-      #to fit the loans into a dataframe correctly -- needed for liquidate loans 
-      #getMaxLoan()
       
       #rendering the UI for progress tracker
       output$progressTrackers <- renderUI({

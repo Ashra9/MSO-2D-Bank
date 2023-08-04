@@ -1,3 +1,4 @@
+#Xing Jun contributed to this script
 source("usePackages.R")
 loadPkgs(c("sqldf","shiny","shinyalert","dplyr"))
 

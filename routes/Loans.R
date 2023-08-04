@@ -1,3 +1,4 @@
+# Yu Liang Contributed to this script
 buy_loans <- function(input, output, vals, gamestate) {
   # Check cash balance first
   loanTerms <- getloanTerms()

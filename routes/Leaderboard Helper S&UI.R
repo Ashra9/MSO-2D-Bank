@@ -1,3 +1,4 @@
+#Ezra contributed to this script
 #for leaderboard
 publishScore <- function(playerid,gamevariantid,score){
   conn <- getAWSConnection()

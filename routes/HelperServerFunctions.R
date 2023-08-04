@@ -1,3 +1,4 @@
+#Ezra, Yu Liang, YiXiu, Xing Jun Contributed to this script 
 source("routes/Loans.R")
 source("routes/Progress Tracker.R")
 #Password modal for registering from ESA class
@@ -16,17 +17,6 @@ passwordModal <- function(failed = FALSE, session) {
     )
   )
 }
-
-#function for when the login is sucessful, go to instructions in tutorial
-# login_checker <- function(input,output,session){
-#   observeEvent(input$loginButton,{
-#     #if credentials match
-#     if (TRUE) {
-#       #goes to instructions page
-#       updateTabItems(session, "sidebar", selected = "tutorial")
-#     }
-#   })
-# }
 
 
 #Function for when the next month button is clicked
