@@ -38,7 +38,7 @@ my_theme <- create_theme(
     primary = "lightblue", danger = "lightblue", light = "#272c30"
   ),
   bs4dash_font(
-    weight_bold = 900,
+    weight_bold = 900
   )
 )
 
@@ -90,17 +90,16 @@ dashboardUI <- function(id) {
                 tabName = "home",
                 # Login page UI
                 tags$style(HTML("
-    /* Custom styles for inverse color scheme */
-    .login-page {
-      background-color: #555; /* Dark background color */
-      color: #fff; /* Light text color */
-    }
-    .form {
-      background-color: #555; /* Dark background color for the form container */
-      color: #fff; /* Text color for input fields
-    }
-    /* Add more custom styles for other elements as needed */
-  ")),
+                /* Custom styles for inverse color scheme */
+                .login-page {
+                  background-color: #555; /* Dark background color */
+                  color: #fff; /* Light text color */
+                }
+                .form {
+                  background-color: #555; /* Dark background color for the form container */
+                  color: #fff; /* Text color for input fields
+                }
+              ")),
                 div(
                   class = "login-page",
                   div(
@@ -117,8 +116,50 @@ dashboardUI <- function(id) {
             bs4TabItem(
               tabName = "tutorial",
               div(
-                class = "tab-content",  # Optional class for styling
-                img(src = "Operational Concept.png", width = "100%", height = "100%"),
+                class = "carousel slide",  # Optional class for styling
+                carousel(
+                  id = ns("mycarousel"),
+                  indicators = TRUE,
+                  carouselItem(
+                    img(src = "1.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "2.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "3.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "4.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "5.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "6.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "7.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "8.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "9.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "10.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "11.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "12.png", width = "100%", height = "100%")
+                  ),
+                  carouselItem(
+                    img(src = "13.png", width = "100%", height = "100%")
+                  )
+                ),
                 actionButton(ns("startGame"), "Play",status = "warning", size = "lg" )
               )
             ),
@@ -159,6 +200,12 @@ dashboardServer <- function(id) {
                             numberofeachtypeofloan=NULL,
                             percentage=0.7,
                             endgame="F")
+      
+      runjs("
+      $('#mycarousel').carousel({
+      interval: false,
+      });
+      ")
 
 
       #after reading instructions and clicking the play button
