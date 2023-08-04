@@ -388,7 +388,7 @@ updateLoansRemoved <- function(loanData, defaulted=0, liquidated=0, current_mont
     ### Give value to loanPayout if loan has reached maturity
     if (defaulted==0 & liquidated==0) {
       print("There are loans that reached maturity")
-      result$payout <- result$loanValue*(1 + result$interest)^(result$loanDuration/12)
+      result$payout <- result$loanValue*(1 + result$interest)^(result$loanDuration)
       print(result)
       loanPayout <- sum(result$payout)
       print(paste("Loan Payout:", loanPayout))

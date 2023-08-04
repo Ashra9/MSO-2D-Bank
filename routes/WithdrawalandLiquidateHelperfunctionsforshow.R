@@ -29,9 +29,9 @@ selectLoansLiquidateModal <- function(loan.type.1.min=0, loan.type.1.max=2,
         style = "display: inline-block; margin-right: 10px;",
         tags$img(src = "sprites/Monopoly men.png", height = "50px", width = "50px", alt = "Monopoly man")
       ),
-      htmlOutput(session$ns("needed")),
       "Select loans to liquidate."
     ),
+    htmlOutput(session$ns("needed")),
     numericInput(session$ns("loantype1"), "Select number of $200 Loans to liquidate", value = 0, 
                  min = loan.type.1.min, max = loan.type.1.max),
     numericInput(session$ns("loantype2"), "Select number of $300 Loans to liquidate", value = 0, 
@@ -247,12 +247,12 @@ server <- function(input, output, session){
       line3 <- "Note that only 70% of the value of liquidated loans will be added to your cash balance."
       max_number_list <- getMaxLoan(vals$loanData)
       HTML(paste("<p style='font-size: 14px;'>", 
-                 line1, vals$cashOnHand,"<br>", 
-                 line2, vals$withdrawals - vals$cashOnHand, "<br>",
+                 line1, "<b>",vals$cashOnHand, "</b>","<br>", 
+                 line2, "<b>", vals$withdrawals - vals$cashOnHand, "</b><br>",
                  line3, "<br>", "<br>",
-                 "Number of $200 loans you still have:", max_number_list$one, "<br>",
-                 "Number of $300 loans you still have:", max_number_list$two, "<br>",
-                 "Number of $600 loans you still have:", max_number_list$three,
+                 "Number of $200 loans you still have:", "<b>", max_number_list$one, "</b><br>",
+                 "Number of $300 loans you still have:", "<b>", max_number_list$two, "</b><br>",
+                 "Number of $600 loans you still have:", "<b>", max_number_list$three, "</b>",
                  "</p>"))
                 })
   })

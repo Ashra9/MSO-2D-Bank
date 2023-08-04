@@ -25,9 +25,9 @@ ingameUI <- function(session){
               color = "info",
               subtitle = "",
               footer = "Loans Information",
-              value = div(tags$b("Loan 1"), " Cost: $200 | Interest Rate: 10% | Default Rate: 10%", tags$br(),
-                          tags$b("Loan 2"), " Cost: $300  | Interest Rate: 20% | Default Rate: 20%",tags$br(),
-                          tags$b("Loan 3"), " Cost: $600  | Interest Rate: 40% | Default Rate: 40%")
+              value = div(tags$b("Loan 1"), " Cost: $200 | Interest Rate: 2% | Default Rate: 2%", tags$br(),
+                          tags$b("Loan 2"), " Cost: $300  | Interest Rate: 3% | Default Rate: 3%",tags$br(),
+                          tags$b("Loan 3"), " Cost: $600  | Interest Rate: 6% | Default Rate: 6%")
             )
             ),
             box(

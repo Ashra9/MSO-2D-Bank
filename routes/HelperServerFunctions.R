@@ -372,7 +372,7 @@ loan_default_update <- function(vals) {
   rows_to_remove <- c()
   if (nrow(vals$loanData) > 0) {
     for (i in 1:nrow(vals$loanData)) {
-      risk <- 1-(1-vals$loanData$risk[i])^(1/12)  
+      risk <- vals$loanData$risk[i]
       print(paste("Risk:",risk))
       if (runif(1) < risk) {
         print("Loan defaulted on")
