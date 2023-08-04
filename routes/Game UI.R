@@ -23,7 +23,7 @@ ingameUI <- function(session){
             bs4ValueBox(
               width = 12,
               color = "info",
-              subtitle = HTML('<span style="font-size: 12px; opacity: 0.7;">*Interest and default rates are expressed as effective monthly rates"</span>'),
+              subtitle = HTML('<span style="font-size: 12px; opacity: 0.7;">*Interest and default rates are expressed as effective monthly rates</span>'),
               footer = "Loans Information",
               value = div(tags$b("Loan 1"), " Cost: $200 | Interest Rate: 2% | Default Rate: 2%", tags$br(),
                           tags$b("Loan 2"), " Cost: $300  | Interest Rate: 3% | Default Rate: 3%",tags$br(),
