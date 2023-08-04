@@ -97,7 +97,7 @@ plotCashGraph <- function(input, output, vals){
           #geom_ribbon(aes(x = month, y = cum_loanDefault, ymin = 0, ymax = cum_loanDefault, fill = "Loan Default"), data = df_cum_value_loan_default, alpha=0.8) +
           
           labs(x = "Month", y = "Cumulative value") +
-          scale_fill_manual(name = "Legends", values = c("Deposits" = "blue", "Withdrawals" = "red", "Loan Value" = "green", "Loan Payout" = "yellow"))
+          scale_fill_manual(name = "Legends", values = c("Deposits" = "blue", "Withdrawals" = "red", "Loan Purchase" = "green", "Loan Payout" = "yellow"))
           #scale_fill_manual(name = "Legends", values = c("Deposits" = "blue", "Withdrawals" = "red", "Loan Purchase" = "green", "Loan Payout" = "yellow", "Loan Liquidation" = "orange", "Loan Default" = "brown"))
       )
     }
