@@ -199,6 +199,20 @@ getloanData <- function(current_month){
   result
 }
 
+getCumLoanPurchased <- function(){
+  
+  #open the connection
+  conn <- getAWSConnection()
+  query <- "SELECT l.month, l.loanID, lt.loanValue FROM loan l INNER JOIN loanTerms lt WHERE lt.loanType = l.loanType"
+  ##print(query)
+  result <- dbGetQuery(conn,query)
+  
+  dbDisconnect(conn)
+  
+  # return the dataframe
+  result
+}
+
 getcashInventory <- function(){
   
   #open the connection
@@ -555,5 +569,6 @@ test <- function(){
   getcashInventory()
   updateCashInventory(month=3, deposits=3000, withdrawals=1860, loanPayout=0,cashOnHand=1400)
   getloanTerms()
+  getCumLoanPurchased()
 }
 

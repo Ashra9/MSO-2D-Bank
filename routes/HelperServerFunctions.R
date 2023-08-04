@@ -129,7 +129,7 @@ next_button <- function(input,output,session, vals){
     print(vals$cashInventory)
     
     })
-
+  
     observeEvent(input$loanliquidatesubmission, {
           removeModal()
           vals$numberofeachtypeofloan <- c(input$loantype1, input$loantype2, input$loantype3)
@@ -194,7 +194,7 @@ after_withdrawal <- function(input, output, session, vals) {
     vals$current_month <- vals$current_month + 1
     
     #update the endgame state to T
-    if (vals$current_month > 3){
+    if (vals$current_month > 12){
       vals$endgame <- "T"
     }
     # Get new loan data

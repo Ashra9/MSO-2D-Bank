@@ -148,7 +148,7 @@ dashboardServer <- function(id) {
       print(paste("Deposits amount:", deposits))
       
       # reactiveValues object for storing items like the user password
-      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, gamevariantid=1, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0,                            loanData = NULL,
+      vals <- reactiveValues(password = NULL,playerid=NULL,playername=NULL, gamevariantid=1, current_month=1, cashOnHand=deposits, deposits=deposits, withdrawals=0, loanPayout=0, loanData = NULL,
                             completedLoansReachMaturity = NULL, completedLoansDefaulted = NULL, completedLoansLiquidated = NULL,
                             gamestate = gamestate,
                             cashInventory = NULL,
