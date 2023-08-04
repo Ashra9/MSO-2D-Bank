@@ -4,10 +4,11 @@ ingameUI <- function(session){
         bs4Card(
           background = "lightblue",
           title = uiOutput(session$ns("currMonth")),
-          width = 9,
+          width = 8,
           height = NULL,
           fluidRow(
-            bs4InfoBox(
+            column(width = 5,
+            box(
               title = div(
                 tags$div(
                   style = "display: inline-block; margin-right: 10px;",
@@ -15,8 +16,34 @@ ingameUI <- function(session){
                 ),
                 "Total Cash"
               ),
-              value = uiOutput(session$ns("totalCash")),
-              color = "info"
+              width = 12,
+              uiOutput(session$ns("totalCash")),
+              background = "info"
+            ),
+            bs4ValueBox(
+              width = 12,
+              color = "secondary",
+              subtitle = "",
+              footer = "Loans Information",
+              value = div(tags$b("Loan 1"), " Cost: $200 | Interest Rate: 10% | Default Rate: 10%", tags$br(),
+                          tags$b("Loan 2"), " Cost: $300  | Interest Rate: 20% | Default Rate: 20%",tags$br(),
+                          tags$b("Loan 3"), " Cost: $600  | Interest Rate: 40% | Default Rate: 40%")
+            )
+            ),
+            box(
+              title = div(
+                tags$div(
+                  style = "display: inline-block; margin-right: 10px;",
+                  tags$img(src = "sprites/signing.png", height = "50px", width = "50px", alt = "Monopoly man")
+                ),
+                "Loan Purchasing"
+              ),
+              width = 7,
+              #height = "100px",
+              "Select No. of each type of loan!",
+              numericInput(session$ns("loan1"), label = "Loan 1", value = 0, min=0),
+              numericInput(session$ns("loan2"), label = "Loan 2", value = 0, min=0),
+              numericInput(session$ns("loan3"), label = "Loan 3", value = 0, min=0)
             ),
             box(
               title = div(
@@ -31,7 +58,8 @@ ingameUI <- function(session){
             )
           )
         ),
-      column(width = 3,
+      column(width = 4,
+             fluidRow(
              actionButton(
                width = "100%",
                session$ns("nextmonth"), 
@@ -42,7 +70,21 @@ ingameUI <- function(session){
                size = "lg",
                class = "nxtbtn"
              ),
-             tags$style(".nxtbtn {height: 100px;}")
+             tags$style(".nxtbtn {height: 100px;}"),
+             box(
+               title = div(
+                 tags$div(
+                   style = "display: inline-block; margin-right: 10px;",
+                   tags$img(src = "sprites/loading.png", height = "50px", width = "50px", alt = "Monopoly man")
+                 ),
+                 "Completed Loans"
+               ),
+               width = 12,
+               uiOutput(session$ns("loanCompletedMaturity")),
+               uiOutput(session$ns("loanCompletedDefault")),
+               uiOutput(session$ns("loanCompletedLiquidated"))
+             )
+             )
              )
       
     ),
@@ -55,38 +97,9 @@ ingameUI <- function(session){
         ),
         "Graphs"
       ),
-      width = 4,
+      width = 12,
       uiOutput(session$ns("graphs"))
-          ),
-    box(
-      title = div(
-        tags$div(
-          style = "display: inline-block; margin-right: 10px;",
-          tags$img(src = "sprites/signing.png", height = "50px", width = "50px", alt = "Monopoly man")
-        ),
-        "Loan Purchasing"
-      ),
-      width = 4,
-      #height = "100px",
-      "Select No. of each type of loan!",
-      numericInput(session$ns("loan1"), label = "Loan 1 | Cost: $200 | Interest Rate: 1% | Default Rate: 50%", value = 0, min=0),
-      numericInput(session$ns("loan2"), label = "Loan 2 | Cost: $300  | Interest Rate: 5% | Default Rate: 50%", value = 0, min=0),
-      numericInput(session$ns("loan3"), label = "Loan 3 | Cost: $600  | Interest Rate: 10% | Default Rate: 50%", value = 0, min=0)
-    ),
-    box(
-      title = div(
-        tags$div(
-          style = "display: inline-block; margin-right: 10px;",
-          tags$img(src = "sprites/loading.png", height = "50px", width = "50px", alt = "Monopoly man")
-        ),
-        "Completed Loans"
-      ),
-      width = 4,
-      #height = "100px",
-      uiOutput(session$ns("loanCompletedMaturity")),
-      uiOutput(session$ns("loanCompletedDefault")),
-      uiOutput(session$ns("loanCompletedLiquidated"))
-    )
+          )
   )
   )
 }
