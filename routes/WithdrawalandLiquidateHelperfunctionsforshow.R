@@ -92,16 +92,6 @@ LiquidateLoans <- function(cashbalance=1400, withdrawalamount=1860,
 }
 
 getMaxLoan <- function(loanData){
-  # loan_type_counts <- loanData %>%group_by(loanType) %>% tally()
-  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 1),2])){
-  #   loan_type_counts[which(loan_type_counts$loanType == 1),2] <- 0
-  # }
-  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 2),2])){
-  #   loan_type_counts[which(loan_type_counts$loanType == 2),2] <- 0
-  # }
-  # if (is.na(loan_type_counts[which(loan_type_counts$loanType == 3),2])){
-  #   loan_type_counts[which(loan_type_counts$loanType == 3),2] <- 0
-  # }
   # Group loanData by loanValue and count occurrences
   loanData_counts <- loanData %>%
     group_by(loanValue) %>%
